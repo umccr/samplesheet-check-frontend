@@ -1,0 +1,22 @@
+.SampleSheetChecker form textarea {
+  height: 300px;
+  font-size: 1.5rem;
+}
+
+.row {
+  padding: 16px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.col-12 {
+  padding: 0;
+}
+
+.Alert {
+  margin-top: 0%;
+}
+
+.log-output {
+  margin: 16px;
+}
