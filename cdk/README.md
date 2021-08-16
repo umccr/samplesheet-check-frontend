@@ -1,4 +1,4 @@
-# UMCCR client CDK for SampleSheet validation
+# UMCCR client CDK for Samplesheet Check
 
 This cdk will built a AWS resources to deploy react samplesheet validation. 
 
