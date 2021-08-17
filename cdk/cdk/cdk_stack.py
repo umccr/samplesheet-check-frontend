@@ -19,9 +19,6 @@ class CdkStack(cdk.Stack):
         # Create the Origin Access Identity (OAI)
         cloudfront_oai = cloudfront.OriginAccessIdentity(self, 'umccr-script-oai',
             comment = "Created By CDK")
-
-        # Giving the OAI read access to the bucket
-        samplesheet_client_bucket.grant_read(cloudfront_oai)
         
         # create s3 configuration details
         s3_origin_source = cloudfront.S3OriginConfig(
@@ -47,5 +44,6 @@ class CdkStack(cdk.Stack):
         cloudfront.CloudFrontWebDistribution(self, "cloud_front_name",
             origin_configs=[source_config],
             error_configurations = [error_page_configuration],
-            viewer_protocol_policy = cloudfront.ViewerProtocolPolicy.ALLOW_ALL
+            viewer_protocol_policy = cloudfront.ViewerProtocolPolicy.ALLOW_ALL,
+            price_class = cloudfront.PriceClass.PRICE_CLASS_ALL
         )
