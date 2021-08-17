@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 import { useAppContext } from "../libs/contextLib";
+import { LinkContainer } from "react-router-bootstrap";
 import "./Home.css";
 
 export default function Home() {
@@ -9,9 +10,9 @@ export default function Home() {
     return (
       <div className="lander">
         <h1>UMCCR Script</h1>
-        <a href="/login" className="text-muted">
+        <LinkContainer to="/login" className="text-muted">
           Please Login
-        </a>
+        </LinkContainer>
       </div>
     );
   }
@@ -19,11 +20,11 @@ export default function Home() {
   function renderScripts() {
     return (
       <div>
-        <a href="/sample-sheet-checker">
+        <LinkContainer to="/sample-sheet-checker">
           <ListGroup.Item action>
             <span className="font-weight-bold">Sample Sheet Checker</span>
           </ListGroup.Item>
-        </a>
+        </LinkContainer>
       </div>
     );
   }
