@@ -12,7 +12,7 @@ function App() {
   const history = useHistory();
 
   async function handleLogout() {
-    // await Auth.signOut();
+    await Auth.signOut();
     setIsAuthenticated(false);
     history.push("/login");
   }
@@ -23,8 +23,8 @@ function App() {
 
   async function onLoad() {
     try {
-      // await Auth.currentSession();
-      // setIsAuthenticated(true);
+      await Auth.currentSession();
+      setIsAuthenticated(true);
     } catch (e) {
       if (e !== "No current user") {
         alert(e);

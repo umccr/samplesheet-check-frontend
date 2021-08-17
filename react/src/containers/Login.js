@@ -15,11 +15,12 @@ export default function Login() {
     password: ""
   });
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
+    console.log(fields);
     event.preventDefault();
     setIsLoading(true);
     try {
-      // await Auth.signIn(email, password);
+      await Auth.signIn(fields.email, fields.password);
       setIsAuthenticated(true)
       alert("Logged in");
       setIsLoading(false);
@@ -28,8 +29,6 @@ export default function Login() {
       setIsLoading(false);
     }
 
-
-    
   }
 
   return (
