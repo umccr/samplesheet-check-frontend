@@ -45,5 +45,6 @@ class CdkStack(cdk.Stack):
             origin_configs=[source_config],
             error_configurations = [error_page_configuration],
             viewer_protocol_policy = cloudfront.ViewerProtocolPolicy.ALLOW_ALL,
+            default_root_object = "index.html",
             price_class = cloudfront.PriceClass.PRICE_CLASS_ALL
         )
