@@ -6,6 +6,7 @@ import "./App.css";
 import { AppContext } from "./libs/contextLib";
 import { Auth } from "aws-amplify";
 import { useHistory } from "react-router-dom";
+import { LinkContainer } from "react-router-bootstrap";
 function App() {
   const [isAuthenticating, setIsAuthenticating] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -37,15 +38,19 @@ function App() {
     !isAuthenticating && (
       <div className="App container py-3">
         <Navbar collapseOnSelect bg="light" expand="md" className="mb-3">
-          <Navbar.Brand href="/" className="font-weight-bold text-muted">
-            UMCCR - Hello
-          </Navbar.Brand>
+          <LinkContainer to="/">
+            <Navbar.Brand className="font-weight-bold text-muted">
+              UMCCR - Hell0
+            </Navbar.Brand>
+          </LinkContainer>
           <Navbar.Toggle />
           <Navbar.Collapse className="justify-content-end">
             {isAuthenticated ? (
               <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
             ) : (
-              <Nav.Link href="/login">Login</Nav.Link>
+              <LinkContainer to="/login">
+                <Nav.Link>Login</Nav.Link>
+              </LinkContainer>
             )}
           </Navbar.Collapse>
         </Navbar>
