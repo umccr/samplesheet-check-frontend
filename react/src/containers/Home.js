@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 import { useAppContext } from "../libs/contextLib";
 import { LinkContainer } from "react-router-bootstrap";
+import { Auth } from "aws-amplify";
+import Nav from "react-bootstrap/Nav";
 import "./Home.css";
 
 export default function Home() {
@@ -9,10 +11,10 @@ export default function Home() {
   function renderLander() {
     return (
       <div className="lander">
-        <h1>UMCCR Script</h1>
-        <LinkContainer to="/login" className="text-muted">
+        <h1>UMCCR Samplesheet Check</h1>
+        <Nav.Link onClick={() => Auth.federatedSignIn({ provider: "Google" })}>
           Please Login
-        </LinkContainer>
+        </Nav.Link>
       </div>
     );
   }
@@ -29,5 +31,9 @@ export default function Home() {
     );
   }
   // TODO: change on authentication
-  return <div className="Home">{true ? renderScripts() : renderLander()}</div>;
+  return (
+    <div className="Home">
+      {isAuthenticated ? renderScripts() : renderLander()}
+    </div>
+  );
 }

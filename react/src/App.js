@@ -4,18 +4,54 @@ import Nav from "react-bootstrap/Nav";
 import Routes from "./Routes";
 import "./App.css";
 import { AppContext } from "./libs/contextLib";
-import { Auth } from "aws-amplify";
+import { Auth, Hub } from "aws-amplify";
 import { useHistory } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
+
+
 function App() {
   const [isAuthenticating, setIsAuthenticating] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const history = useHistory();
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    Hub.listen("auth", ({ payload: { event, data } }) => {
+      console.log(event);
+      switch (event) {
+        case "signIn":
+          setIsAuthenticated(true)
+          break;
+        case "cognitoHostedUI":
+          getUser().then((userData) => setUser(userData));
+          break;
+        case "signOut":
+          setUser(null);
+          break;
+        case "signIn_failure":
+        case "cognitoHostedUI_failure":
+          console.log("Sign in failure", data);
+          break;
+        default:
+          console.log("unkonw type");
+      }
+    });
+
+    getUser().then((userData) => {
+      setUser(userData)
+      console.log(userData);
+    });
+  }, []);
+
+  function getUser() {
+    return Auth.currentAuthenticatedUser()
+      .then((userData) => userData)
+      .catch(() => console.log("Not signed in"));
+  }
 
   async function handleLogout() {
-    await Auth.signOut();
+    await Auth.signOut({ global: true });
     setIsAuthenticated(false);
-    history.push("/login");
   }
 
   useEffect(() => {
@@ -48,9 +84,11 @@ function App() {
             {isAuthenticated ? (
               <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
             ) : (
-              <LinkContainer to="/login">
-                <Nav.Link>Login</Nav.Link>
-              </LinkContainer>
+              <Nav.Link
+                onClick={() => Auth.federatedSignIn({ provider: "Google" })}
+              >
+                Login
+              </Nav.Link>
             )}
           </Navbar.Collapse>
         </Navbar>
