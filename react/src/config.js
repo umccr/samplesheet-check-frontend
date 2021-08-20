@@ -1,15 +1,35 @@
-// TODO: Change the configuration for cognito
+import dotenv from "dotenv"
+dotenv.config()
+
+const STAGE = process.env.REACT_APP_STAGE;
+const REGION = process.env.REACT_APP_REGION;
+const IS_LOCAL = STAGE === "localhost";
+const OAUTH_DOMAIN = process.env.REACT_APP_OAUTH_DOMAIN;
+
 const config = {
   // endpoint for backend
   apiGateway: {
-    REGION: "ap-southeast-2",
-    URL: "https://thzxwdcebd.execute-api.ap-southeast-2.amazonaws.com/prod",
+    REGION: REGION,
+    URL: process.env.REACT_APP_API_URL,
   },
   cognito: {
-    REGION: "ap-southeast-2",
-    USER_POOL_ID: "ap-southeast-2_3qo9bgZ83",
-    APP_CLIENT_ID: "7lshj924ejcaindgukrjg80a42",
-    IDENTITY_POOL_ID: "ap-southeast-2:0f4bd297-9e29-404f-813c-4b01f02e8e0b",
+    REGION: REGION,
+    USER_POOL_ID: process.env.REACT_APP_COG_USER_POOL_ID,
+    APP_CLIENT_ID: IS_LOCAL
+      ? process.env.REACT_APP_COG_APP_CLIENT_ID_LOCAL
+      : process.env.REACT_APP_COG_APP_CLIENT_ID_STAGE,
+    IDENTITY_POOL_ID: process.env.REACT_APP_COG_IDENTITY_POOL_ID,
+    OAUTH: {
+      domain: OAUTH_DOMAIN,
+      scope: ["email", "aws.cognito.signin.user.admin", "openid", "profile"],
+      redirectSignIn: IS_LOCAL
+        ? process.env.REACT_APP_OAUTH_REDIRECT_IN_LOCAL
+        : process.env.REACT_APP_OAUTH_REDIRECT_IN_STAGE,
+      redirectSignOut: IS_LOCAL
+        ? process.env.REACT_APP_OAUTH_REDIRECT_OUT_LOCAL
+        : process.env.REACT_APP_OAUTH_REDIRECT_OUT_STAGE,
+      responseType: "code",
+    },
   },
 };
 
