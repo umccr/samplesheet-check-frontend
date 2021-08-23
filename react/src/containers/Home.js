@@ -11,7 +11,7 @@ export default function Home() {
   function renderLander() {
     return (
       <div className="lander">
-        <h1>UMCCR Samplesheet Check</h1>
+        <h3>UMCCR Samplesheet Check</h3>
         <Nav.Link onClick={() => Auth.federatedSignIn({ provider: "Google" })}>
           Please Login
         </Nav.Link>
