@@ -26,13 +26,24 @@ export default function SampleSheetChecker() {
 
   const [logLevel, setLogLevel] = useState("ERROR");
 
+  // Reset Result Response
+  function resetResponse(){
+    setValidationResponse({});
+    setIsValidated(false);
+  }
+
+  // Handle Log Level Changes
+  function logLevelChangeHandler(event){
+    resetResponse()
+    setLogLevel(event.target.value)
+  }
+
   // Handle File Changes
   function fileChangeHandler(event) {
     fileRef.current = event.target.files[0];
     if (fileRef.current) {
       setIsFileSelected(true);
-      setValidationResponse({});
-      setIsValidated(false);
+      resetResponse()
     } else {
       setIsFileSelected(false);
     }
@@ -128,7 +139,7 @@ export default function SampleSheetChecker() {
             <Form.Label>Logger Option</Form.Label>
             <Form.Control
               value={logLevel}
-              onChange={(e) => setLogLevel(e.target.value)}
+              onChange={logLevelChangeHandler}
               as="select"
               label="debug option input"
               custom

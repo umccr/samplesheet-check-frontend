@@ -1,6 +1,7 @@
 from aws_cdk import (core as cdk,   
                         aws_s3 as s3,
-                        aws_cloudfront as cloudfront
+                        aws_cloudfront as cloudfront,
+                        aws_ssm as ssm
                     )
 
 class CdkStack(cdk.Stack):
@@ -8,9 +9,14 @@ class CdkStack(cdk.Stack):
     def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
+        # Load SSM parameter
+        bucket_name = ssm.StringParameter.from_string_parameter_attributes(self, "bucketValue",
+            parameter_name="/samplesheet-check/fe/s3-name"
+        ).string_value
+
         # Creating bucket for the build directory code
         samplesheet_client_bucket = s3.Bucket(self, "umccr-samplesheet-script", 
-            bucket_name="umccr-script-cdk.com",
+            bucket_name = bucket_name,
             website_index_document = "index.html",
             website_error_document = "index.html",
             block_public_access= s3.BlockPublicAccess.BLOCK_ALL
@@ -32,7 +38,7 @@ class CdkStack(cdk.Stack):
             behaviors=[cloudfront.Behavior(is_default_behavior=True)]
         )
 
-        # setup error pages
+        # setup error pages redirection
         error_page_configuration = cloudfront.CfnDistribution.CustomErrorResponseProperty(
             error_code = 403,
             error_caching_min_ttl  = 60,
