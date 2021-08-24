@@ -1,6 +1,3 @@
-import dotenv from "dotenv"
-dotenv.config()
-
 const STAGE = process.env.REACT_APP_STAGE;
 const REGION = process.env.REACT_APP_REGION;
 const IS_LOCAL = STAGE === "localhost";

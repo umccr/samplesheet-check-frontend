@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 import { useAppContext } from "../libs/contextLib";
 import { LinkContainer } from "react-router-bootstrap";
@@ -30,7 +30,7 @@ export default function Home() {
       </div>
     );
   }
-  // TODO: change on authentication
+
   return (
     <div className="Home">
       {isAuthenticated ? renderScripts() : renderLander()}

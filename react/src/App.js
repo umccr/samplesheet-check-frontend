@@ -5,7 +5,6 @@ import Routes from "./Routes";
 import "./App.css";
 import { AppContext } from "./libs/contextLib";
 import { Auth, Hub } from "aws-amplify";
-import { useHistory } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
 
 

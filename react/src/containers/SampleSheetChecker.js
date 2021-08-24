@@ -27,15 +27,15 @@ export default function SampleSheetChecker() {
   const [logLevel, setLogLevel] = useState("ERROR");
 
   // Reset Result Response
-  function resetResponse(){
+  function resetResponse() {
     setValidationResponse({});
     setIsValidated(false);
   }
 
   // Handle Log Level Changes
-  function logLevelChangeHandler(event){
-    resetResponse()
-    setLogLevel(event.target.value)
+  function logLevelChangeHandler(event) {
+    resetResponse();
+    setLogLevel(event.target.value);
   }
 
   // Handle File Changes
@@ -43,7 +43,7 @@ export default function SampleSheetChecker() {
     fileRef.current = event.target.files[0];
     if (fileRef.current) {
       setIsFileSelected(true);
-      resetResponse()
+      resetResponse();
     } else {
       setIsFileSelected(false);
     }
@@ -77,7 +77,7 @@ export default function SampleSheetChecker() {
       },
       body: formData,
     };
-    
+
     API.post("spreadsheet-check", "/", dataRequest)
       .then((response) => {
         setValidationResponse(response);
