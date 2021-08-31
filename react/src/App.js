@@ -16,7 +16,6 @@ function App() {
 
   useEffect(() => {
     Hub.listen("auth", ({ payload: { event, data } }) => {
-      console.log(event);
       switch (event) {
         case "signIn":
           setIsAuthenticated(true)

@@ -6,6 +6,8 @@ import Alert from "react-bootstrap/Alert";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
+
 import "./SampleSheetChecker.css";
 
 const constant = {
@@ -89,39 +91,80 @@ export default function SampleSheetChecker() {
         setIsLoading(false);
       });
   }
+  function displayLog(log_file) {
+    const arrayInput = log_file.split("\n");
+    return (
+      <>
+        <b>Logs:</b>
+        {arrayInput.map((val, index) => (
+          <Row key={index}>{val}</Row>
+        ))}
+      </>
+    );
+  }
+  function displayErrorMessage(errorMessage) {
+    return (
+      <>
+        <b>Error: </b> {errorMessage} <br />
+      </>
+    );
+  }
+
+  function download(text) {
+    // parameter take a text to be downloaded
+    var element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+    );
+    element.setAttribute("download", "log.txt");
+
+    element.style.display = "none";
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+  }
 
   function displayResult(validationResponse) {
     if (isValidated) {
-      if (validationResponse.checkStatus === "PASS") {
-        return (
-          <Row>
-            <Col xs={12}>
-              <Alert variant="success">
-                The CSV file has passed the validation
-              </Alert>
-            </Col>
-          </Row>
-        );
-      } else {
-        const log_file_array = validationResponse.log_file.split("\n");
-        return (
-          <Row>
-            <Col xs={12}>
-              <Alert variant="danger">
-                <Alert.Heading>
-                  <b>Error: </b>
-                  {validationResponse.errorMessage}. [See logs below]
-                </Alert.Heading>
-                <hr />
+      // Parse data from response
+      const alertVariant =
+        validationResponse.checkStatus === "PASS" ? "success" : "danger";
+      const errorMessage = validationResponse.errorMessage;
+      const log_file = validationResponse.log_file;
 
-                {log_file_array.map((val, index) => (
-                  <Row key={index}>{val}</Row>
-                ))}
-              </Alert>
-            </Col>
-          </Row>
-        );
-      }
+      return (
+        <Row>
+          <p onClick={() => download(log_file)}>ONCLICK</p>
+          <Col xs={12}>
+            <Alert variant={alertVariant}>
+              <Alert.Heading>
+                Check Result: <b>{validationResponse.checkStatus}</b>
+              </Alert.Heading>
+              {errorMessage || log_file ? (
+                <>
+                  <hr />
+                  {errorMessage ? displayErrorMessage(errorMessage) : <></>}
+                  {log_file ? displayLog(log_file) : <></>}
+                </>
+              ) : (
+                <></>
+              )}
+            </Alert>
+            {log_file ? (
+              <div className="d-grid">
+                <Button block onClick={() => download(log_file)}>
+                  Download logs as a txt file
+                </Button>
+              </div>
+            ) : (
+              <></>
+            )}
+          </Col>
+        </Row>
+      );
     }
   }
 
