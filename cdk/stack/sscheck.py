@@ -116,4 +116,47 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             # viewer_certificate=cloudfront.ViewerCertificate.from_acm_certificate(cert_apse2)
         )
 
+
+
+        # Adding new Cognito App Client
+        cog_user_pool = cognito.UserPool.from_user_pool_id(
+            self,
+            "ExistingUserPool",
+            cog_user_pool_id
+        )
+
+        sscheck_url = "https://" + domain_name + "/"
+        # O Auth Config
+        o_auth_config = cognito.OAuthSettings(
+            callback_urls=[sscheck_url],
+            flows=cognito.OAuthFlows(
+                authorization_code_grant=True,
+                client_credentials=False,
+                implicit_code_grant=False 
+            ),
+            logout_urls=[sscheck_url],
+            scopes=[
+                cognito.OAuthScope.EMAIL,
+                cognito.OAuthScope.OPENID,
+                cognito.OAuthScope.PROFILE,
+                cognito.OAuthScope.COGNITO_ADMIN
+            ]
+        )
+        
+        # add new App client
+        cog_user_pool.add_client(
+            "AddNewAppClient", 
+            auth_flows=cognito.AuthFlow(
+                admin_user_password=True,
+                custom=True,
+                user_password =False,
+                user_srp=True
+            ),
+            enable_token_revocation=False,
+            generate_secret=False,
+            o_auth = o_auth_config,
+            user_pool_client_name="Sample Sheet Check"
+        )
+
+
         
