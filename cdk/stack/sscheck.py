@@ -11,7 +11,7 @@ from aws_cdk import (
 
 class SampleSheetCheckFrontEndStack(cdk.Stack):
 
-    def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: cdk.Construct, construct_id: str,constants=None, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         # Load SSM parameter for bucket name ( Created via Console)
@@ -19,19 +19,21 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             parameter_name="/sscheck/bucket_name"
         ).string_value
 
+        # Query domain_name config from SSM Parameter Store (Created via Conosle)
+        domain_name = ssm.StringParameter.from_string_parameter_name(
+            self,
+            "DomainName",
+            string_parameter_name="/sscheck/domain",
+        ).string_value
+
+        # Query sscheck_url (created via Console)
+        sscheck_url = ssm.StringParameter.from_string_parameter_name(
+            self,
+            "Url",
+            string_parameter_name="/sscheck/url",
+        ).string_value
+
         # --- Query deployment env specific config from SSM Parameter Store
-
-        cert_apse2_arn = ssm.StringParameter.from_string_parameter_name(
-            self,
-            "SSLCertAPSE2ARN",
-            string_parameter_name="/htsget/acm/apse2_arn",
-        )
-
-        cert_apse2 = acm.Certificate.from_certificate_arn(
-            self,
-            "SSLCertAPSE2",
-            certificate_arn=cert_apse2_arn.string_value,
-        )
 
         hosted_zone_id = ssm.StringParameter.from_string_parameter_name(
             self,
@@ -45,30 +47,11 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             string_parameter_name="hosted_zone_name"
         ).string_value
 
-        # Query domain_name config from SSM Parameter Store (Created via Conosle)
-        domain_name = ssm.StringParameter.from_string_parameter_name(
-            self,
-            "DomainName",
-            string_parameter_name="/sscheck/domain",
-        ).string_value
-
         # --- Cognito parameters are from data portal terraform stack
         cog_user_pool_id = ssm.StringParameter.from_string_parameter_name(
             self,
             "CogUserPoolID",
             string_parameter_name="/data_portal/client/cog_user_pool_id",
-        ).string_value
-
-        cog_app_client_id_stage = ssm.StringParameter.from_string_parameter_name(
-            self,
-            "CogAppClientIDStage",
-            string_parameter_name="/data_portal/client/cog_app_client_id_stage",
-        ).string_value
-
-        cog_app_client_id_local = ssm.StringParameter.from_string_parameter_name(
-            self,
-            "CogAppClientIDLocal",
-            string_parameter_name="/data_portal/client/cog_app_client_id_local",
         ).string_value
 
         # Creating bucket for the build directory code
@@ -116,7 +99,22 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             # viewer_certificate=cloudfront.ViewerCertificate.from_acm_certificate(cert_apse2)
         )
 
+        hosted_zone = route53.HostedZone.from_hosted_zone_attributes(
+            self,
+            "HostedZone",
+            hosted_zone_id=hosted_zone_id,
+            zone_name=hosted_zone_name,
+        )
 
+        # route53.ARecord(
+        #     self,
+        #     "SampleSheetCustomDomainAlias",
+        #     target=route53.RecordTarget(
+        #         alias_target=route53t.CloudFrontTarget(sscheck_cloudfront)
+        #     ),
+        #     zone=hosted_zone,
+        #     record_name="sscheck"
+        # )
 
         # Adding new Cognito App Client
         cog_user_pool = cognito.UserPool.from_user_pool_id(
@@ -125,7 +123,6 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             cog_user_pool_id
         )
 
-        sscheck_url = "https://" + domain_name + "/"
         # O Auth Config
         o_auth_config = cognito.OAuthSettings(
             callback_urls=[sscheck_url],
@@ -144,7 +141,7 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
         )
         
         # add new App client
-        cog_user_pool.add_client(
+        new_user_pool_client = cog_user_pool.add_client(
             "AddNewAppClient", 
             auth_flows=cognito.AuthFlow(
                 admin_user_password=True,
@@ -158,5 +155,22 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             user_pool_client_name="Sample Sheet Check"
         )
 
-
-        
+        # Write SSM parameter for ReactApp
+        ssm.StringParameter(self, "WriteOauthRedirectInParameter",
+            allowed_pattern=".*",
+            parameter_name="/sscheck/client/oauth_redirect_in_stage",
+            string_value=sscheck_url,
+            tier=ssm.ParameterTier.STANDARD
+        )
+        ssm.StringParameter(self, "WriteOauthRedirectOutParameter",
+            allowed_pattern=".*",
+            parameter_name="/sscheck/client/oauth_redirect_out_stage",
+            string_value=sscheck_url,
+            tier=ssm.ParameterTier.STANDARD
+        )
+        ssm.StringParameter(self, "WriteAppClientIdParameter",
+            allowed_pattern=".*",
+            parameter_name="/sscheck/client/cog_app_client_id_stage",
+            string_value=new_user_pool_client.user_pool_client_id,
+            tier=ssm.ParameterTier.STANDARD
+        )
