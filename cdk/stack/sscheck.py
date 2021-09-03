@@ -168,6 +168,7 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             enable_token_revocation=False,
             generate_secret=False,
             o_auth = o_auth_config,
+            supported_identity_providers=[cognito.UserPoolClientIdentityProvider.GOOGLE],
             user_pool_client_name="Sample Sheet Check"
         )
 
