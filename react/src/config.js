@@ -1,7 +1,7 @@
 const STAGE = process.env.REACT_APP_STAGE;
 const REGION = process.env.REACT_APP_REGION;
 const IS_LOCAL = STAGE === "localhost";
-const OAUTH_DOMAIN = process.env.REACT_APP_OAUTH_DOMAIN;
+const OAUTH_DOMAIN = `${process.env.REACT_APP_OAUTH_DOMAIN}.auth.${REGION}.amazoncognito.com`;
 
 const config = {
   // endpoint for backend

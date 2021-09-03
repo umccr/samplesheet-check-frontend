@@ -137,7 +137,6 @@ export default function SampleSheetChecker() {
 
       return (
         <Row>
-          <p onClick={() => download(log_file)}>ONCLICK</p>
           <Col xs={12}>
             <Alert variant={alertVariant}>
               <Alert.Heading>
