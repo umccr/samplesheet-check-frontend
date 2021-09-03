@@ -47,6 +47,17 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             string_parameter_name="hosted_zone_name"
         ).string_value
 
+        cert_use1_arn = ssm.StringParameter.from_string_parameter_name(
+            self,
+            "SSLCertUSE1ARN",
+            string_parameter_name="cert_use1_arn",
+        )
+
+        cert_use1 = acm.Certificate.from_certificate_arn(
+            self,
+            "SSLCertUSE1",
+            certificate_arn=cert_use1_arn.string_value,
+        )
         # --- Cognito parameters are from data portal terraform stack
         cog_user_pool_id = ssm.StringParameter.from_string_parameter_name(
             self,
@@ -96,7 +107,12 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             default_root_object = "index.html",
             price_class = cloudfront.PriceClass.PRICE_CLASS_ALL,
             enable_ip_v6 = False,
-            # viewer_certificate=cloudfront.ViewerCertificate.from_acm_certificate(cert_apse2)
+            viewer_certificate=cloudfront.ViewerCertificate.from_acm_certificate(
+                certificate=cert_use1,
+                aliases=[domain_name],
+                security_policy=cloudfront.SecurityPolicyProtocol.TLS_V1,
+                ssl_method=cloudfront.SSLMethod.SNI
+            )
         )
 
         hosted_zone = route53.HostedZone.from_hosted_zone_attributes(
@@ -106,15 +122,15 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             zone_name=hosted_zone_name,
         )
 
-        # route53.ARecord(
-        #     self,
-        #     "SampleSheetCustomDomainAlias",
-        #     target=route53.RecordTarget(
-        #         alias_target=route53t.CloudFrontTarget(sscheck_cloudfront)
-        #     ),
-        #     zone=hosted_zone,
-        #     record_name="sscheck"
-        # )
+        route53.ARecord(
+            self,
+            "SampleSheetCustomDomainAlias",
+            target=route53.RecordTarget(
+                alias_target=route53t.CloudFrontTarget(sscheck_cloudfront)
+            ),
+            zone=hosted_zone,
+            record_name="sscheck"
+        )
 
         # Adding new Cognito App Client
         cog_user_pool = cognito.UserPool.from_user_pool_id(
