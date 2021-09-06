@@ -6,7 +6,8 @@ from aws_cdk import (
     aws_route53 as route53,
     aws_route53_targets as route53t,
     aws_certificatemanager as acm,
-    aws_cognito as cognito
+    aws_cognito as cognito,
+    aws_apigatewayv2 as apigatewayv2
 )
 
 class SampleSheetCheckFrontEndStack(cdk.Stack):
@@ -191,3 +192,17 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             string_value=new_user_pool_client.user_pool_client_id,
             tier=ssm.ParameterTier.STANDARD
         )
+        
+        # Fetch Metadata Authorizer
+        metadata_api_authorizer_id = ssm.StringParameter.from_string_parameter_attributes(
+            self, 
+            "AuthorizerId",
+            parameter_name="/sscheck/metadata-api/authorizer-id"
+        ).string_value
+
+        metadata_api_authorizer = apigatewayv2.HttpAuthorizer.from_http_authorizer_attributes(
+            self,
+            "MetadataApiAuthorizer",
+            authorizer_id = metadata_api_authorizer_id,
+            authorizer_type = "JWT"
+        ) 
