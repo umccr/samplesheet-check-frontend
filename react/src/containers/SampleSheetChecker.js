@@ -10,6 +10,8 @@ import Button from "react-bootstrap/Button";
 
 import "./SampleSheetChecker.css";
 
+import ShowError from "../components/Error"
+
 const constant = {
   MAX_ATTACHMENT_SIZE: 512000000, //in bytes
   DEBUG_OPTIONS: ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], // logging level in python
@@ -27,6 +29,12 @@ export default function SampleSheetChecker() {
   const [isValidated, setIsValidated] = useState(false);
 
   const [logLevel, setLogLevel] = useState("ERROR");
+
+  // State for error
+  const [isError, setIsError] = useState(false)
+  function handleError(value){
+    setIsError(value)
+  }
 
   // Reset Result Response
   function resetResponse() {
@@ -89,6 +97,7 @@ export default function SampleSheetChecker() {
       .catch((error) => {
         console.error(error);
         setIsLoading(false);
+        setIsError(true)
       });
   }
   function displayLog(log_file) {
@@ -219,6 +228,7 @@ export default function SampleSheetChecker() {
         </Row>
 
         {displayResult(validationResponse)}
+        <ShowError handleError={handleError} isError={isError}/>
       </Container>
     </div>
   );
