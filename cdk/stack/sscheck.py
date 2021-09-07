@@ -27,13 +27,6 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             string_parameter_name="/sscheck/domain",
         ).string_value
 
-        # Query sscheck_url (created via Console)
-        sscheck_url = ssm.StringParameter.from_string_parameter_name(
-            self,
-            "Url",
-            string_parameter_name="/sscheck/url",
-        ).string_value
-
         # --- Query deployment env specific config from SSM Parameter Store
 
         hosted_zone_id = ssm.StringParameter.from_string_parameter_name(
@@ -59,12 +52,6 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             "SSLCertUSE1",
             certificate_arn=cert_use1_arn.string_value,
         )
-        # --- Cognito parameters are from data portal terraform stack
-        cog_user_pool_id = ssm.StringParameter.from_string_parameter_name(
-            self,
-            "CogUserPoolID",
-            string_parameter_name="/data_portal/client/cog_user_pool_id",
-        ).string_value
 
         # Creating bucket for the build directory code
         samplesheet_client_bucket = s3.Bucket(self, "umccr-samplesheet-script", 
@@ -133,76 +120,3 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             record_name="sscheck"
         )
 
-        # Adding new Cognito App Client
-        cog_user_pool = cognito.UserPool.from_user_pool_id(
-            self,
-            "ExistingUserPool",
-            cog_user_pool_id
-        )
-
-        # O Auth Config
-        o_auth_config = cognito.OAuthSettings(
-            callback_urls=[sscheck_url],
-            flows=cognito.OAuthFlows(
-                authorization_code_grant=True,
-                client_credentials=False,
-                implicit_code_grant=False 
-            ),
-            logout_urls=[sscheck_url],
-            scopes=[
-                cognito.OAuthScope.EMAIL,
-                cognito.OAuthScope.OPENID,
-                cognito.OAuthScope.PROFILE,
-                cognito.OAuthScope.COGNITO_ADMIN
-            ]
-        )
-        
-        # add new App client
-        new_user_pool_client = cog_user_pool.add_client(
-            "AddNewAppClient", 
-            auth_flows=cognito.AuthFlow(
-                admin_user_password=True,
-                custom=True,
-                user_password =False,
-                user_srp=True
-            ),
-            enable_token_revocation=False,
-            generate_secret=False,
-            o_auth = o_auth_config,
-            supported_identity_providers=[cognito.UserPoolClientIdentityProvider.GOOGLE],
-            user_pool_client_name="Sample Sheet Check"
-        )
-
-        # Write SSM parameter for ReactApp
-        ssm.StringParameter(self, "WriteOauthRedirectInParameter",
-            allowed_pattern=".*",
-            parameter_name="/sscheck/client/oauth_redirect_in_stage",
-            string_value=sscheck_url,
-            tier=ssm.ParameterTier.STANDARD
-        )
-        ssm.StringParameter(self, "WriteOauthRedirectOutParameter",
-            allowed_pattern=".*",
-            parameter_name="/sscheck/client/oauth_redirect_out_stage",
-            string_value=sscheck_url,
-            tier=ssm.ParameterTier.STANDARD
-        )
-        ssm.StringParameter(self, "WriteAppClientIdParameter",
-            allowed_pattern=".*",
-            parameter_name="/sscheck/client/cog_app_client_id_stage",
-            string_value=new_user_pool_client.user_pool_client_id,
-            tier=ssm.ParameterTier.STANDARD
-        )
-        
-        # Fetch Metadata Authorizer
-        metadata_api_authorizer_id = ssm.StringParameter.from_string_parameter_attributes(
-            self, 
-            "AuthorizerId",
-            parameter_name="/sscheck/metadata-api/authorizer-id"
-        ).string_value
-
-        metadata_api_authorizer = apigatewayv2.HttpAuthorizer.from_http_authorizer_attributes(
-            self,
-            "MetadataApiAuthorizer",
-            authorizer_id = metadata_api_authorizer_id,
-            authorizer_type = "JWT"
-        ) 
