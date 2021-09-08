@@ -5,9 +5,7 @@ from aws_cdk import (
     aws_ssm as ssm,
     aws_route53 as route53,
     aws_route53_targets as route53t,
-    aws_certificatemanager as acm,
-    aws_cognito as cognito,
-    aws_apigatewayv2 as apigatewayv2
+    aws_certificatemanager as acm
 )
 
 class SampleSheetCheckFrontEndStack(cdk.Stack):
@@ -103,6 +101,7 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             )
         )
 
+        # Fetch existing hosted_zone
         hosted_zone = route53.HostedZone.from_hosted_zone_attributes(
             self,
             "HostedZone",
@@ -110,6 +109,7 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             zone_name=hosted_zone_name,
         )
 
+        # Create A-Record to Route53
         route53.ARecord(
             self,
             "SampleSheetCustomDomainAlias",
