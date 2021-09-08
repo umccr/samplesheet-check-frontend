@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import Routes from "./Routes";
-import "./App.css";
 import { AppContext } from "./libs/contextLib";
 import { Auth, Hub } from "aws-amplify";
 import { LinkContainer } from "react-router-bootstrap";
@@ -28,16 +27,12 @@ function App() {
           break;
         case "signIn_failure":
         case "cognitoHostedUI_failure":
-          console.log("Sign in failure", data);
-          break;
         default:
-          console.log("unkonw type");
       }
     });
 
     getUser().then((userData) => {
       setUser(userData)
-      console.log(userData);
     });
   }, []);
 
@@ -62,7 +57,7 @@ function App() {
       setIsAuthenticated(true);
     } catch (e) {
       if (e !== "No current user") {
-        alert(e);
+
       }
     }
 

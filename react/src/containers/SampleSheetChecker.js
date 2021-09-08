@@ -10,6 +10,8 @@ import Button from "react-bootstrap/Button";
 
 import "./SampleSheetChecker.css";
 
+import ShowError from "../components/Error"
+
 const constant = {
   MAX_ATTACHMENT_SIZE: 512000000, //in bytes
   DEBUG_OPTIONS: ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], // logging level in python
@@ -27,6 +29,12 @@ export default function SampleSheetChecker() {
   const [isValidated, setIsValidated] = useState(false);
 
   const [logLevel, setLogLevel] = useState("ERROR");
+
+  // State for error
+  const [isError, setIsError] = useState(false)
+  function handleError(value){
+    setIsError(value)
+  }
 
   // Reset Result Response
   function resetResponse() {
@@ -87,8 +95,8 @@ export default function SampleSheetChecker() {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.error(error);
         setIsLoading(false);
+        setIsError(true)
       });
   }
   function displayLog(log_file) {
@@ -137,7 +145,6 @@ export default function SampleSheetChecker() {
 
       return (
         <Row>
-          <p onClick={() => download(log_file)}>ONCLICK</p>
           <Col xs={12}>
             <Alert variant={alertVariant}>
               <Alert.Heading>
@@ -155,7 +162,7 @@ export default function SampleSheetChecker() {
             </Alert>
             {log_file ? (
               <div className="d-grid">
-                <Button block onClick={() => download(log_file)}>
+                <Button variant="outline-secondary" block onClick={() => download(log_file)}>
                   Download logs as a txt file
                 </Button>
               </div>
@@ -220,6 +227,7 @@ export default function SampleSheetChecker() {
         </Row>
 
         {displayResult(validationResponse)}
+        <ShowError handleError={handleError} isError={isError}/>
       </Container>
     </div>
   );
