@@ -27,10 +27,7 @@ function App() {
           break;
         case "signIn_failure":
         case "cognitoHostedUI_failure":
-          console.error("Sign in failure", data);
-          break;
         default:
-          console.log("unkonw type");
       }
     });
 
@@ -60,7 +57,7 @@ function App() {
       setIsAuthenticated(true);
     } catch (e) {
       if (e !== "No current user") {
-        console.error(e);
+
       }
     }
 

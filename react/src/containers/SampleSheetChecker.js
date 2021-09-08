@@ -95,7 +95,6 @@ export default function SampleSheetChecker() {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.error(error);
         setIsLoading(false);
         setIsError(true)
       });
@@ -163,7 +162,7 @@ export default function SampleSheetChecker() {
             </Alert>
             {log_file ? (
               <div className="d-grid">
-                <Button block onClick={() => download(log_file)}>
+                <Button variant="outline-secondary" block onClick={() => download(log_file)}>
                   Download logs as a txt file
                 </Button>
               </div>
