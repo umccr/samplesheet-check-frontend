@@ -6,19 +6,14 @@ import { AppContext } from "./libs/contextLib";
 import { Auth, Hub } from "aws-amplify";
 import { LinkContainer } from "react-router-bootstrap";
 
-
 function App() {
   const [isAuthenticating, setIsAuthenticating] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     Hub.listen("auth", ({ payload: { event, data } }) => {
       switch (event) {
-        case "signIn":
-          setIsAuthenticated(true)
-          break;
         case "cognitoHostedUI":
           getUser().then((userData) => setUser(userData));
           break;
@@ -32,7 +27,7 @@ function App() {
     });
 
     getUser().then((userData) => {
-      setUser(userData)
+      setUser(userData);
     });
   }, []);
 
@@ -44,25 +39,24 @@ function App() {
 
   async function handleLogout() {
     await Auth.signOut({ global: true });
-    setIsAuthenticated(false);
+    setUser(false);
   }
 
   useEffect(() => {
+    async function onLoad() {
+      try {
+        await Auth.currentSession();
+        getUser().then((userData) => setUser(userData));
+      } catch (e) {
+        if (e !== "No current user") {
+        }
+      }
+
+      setIsAuthenticating(false);
+    }
     onLoad();
   }, []);
 
-  async function onLoad() {
-    try {
-      await Auth.currentSession();
-      setIsAuthenticated(true);
-    } catch (e) {
-      if (e !== "No current user") {
-
-      }
-    }
-
-    setIsAuthenticating(false);
-  }
   return (
     !isAuthenticating && (
       <div className="App container py-3">
@@ -74,7 +68,7 @@ function App() {
           </LinkContainer>
           <Navbar.Toggle />
           <Navbar.Collapse className="justify-content-end">
-            {isAuthenticated ? (
+            {user ? (
               <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
             ) : (
               <Nav.Link
@@ -86,7 +80,7 @@ function App() {
           </Navbar.Collapse>
         </Navbar>
 
-        <AppContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+        <AppContext.Provider value={{ user }}>
           <Routes />
         </AppContext.Provider>
       </div>

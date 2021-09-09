@@ -7,7 +7,7 @@ import Nav from "react-bootstrap/Nav";
 import "./Home.css";
 
 export default function Home() {
-  const { isAuthenticated } = useAppContext();
+  const { user } = useAppContext();
   function renderLander() {
     return (
       <div className="lander">
@@ -31,9 +31,5 @@ export default function Home() {
     );
   }
 
-  return (
-    <div className="Home">
-      {isAuthenticated ? renderScripts() : renderLander()}
-    </div>
-  );
+  return <div className="Home">{user ? renderScripts() : renderLander()}</div>;
 }

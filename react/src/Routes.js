@@ -5,7 +5,6 @@ import NotFound from "./containers/NotFound";
 import SampleSheetChecker from "./containers/SampleSheetChecker";
 
 import AuthenticatedRoute from "./components/AuthenticatedRoute";
-import UnauthenticatedRoute from "./components/UnauthenticatedRoute";
 
 // Declaring Routes
 // Route: can be access regardless auth/unauth
