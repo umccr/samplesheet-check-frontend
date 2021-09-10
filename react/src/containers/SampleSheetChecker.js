@@ -10,7 +10,7 @@ import Button from "react-bootstrap/Button";
 
 import "./SampleSheetChecker.css";
 
-import ShowError from "../components/Error"
+import ShowError from "../components/Error";
 
 const constant = {
   MAX_ATTACHMENT_SIZE: 512000000, //in bytes
@@ -31,9 +31,9 @@ export default function SampleSheetChecker() {
   const [logLevel, setLogLevel] = useState("ERROR");
 
   // State for error
-  const [isError, setIsError] = useState(false)
-  function handleError(value){
-    setIsError(value)
+  const [isError, setIsError] = useState(false);
+  function handleError(value) {
+    setIsError(value);
   }
 
   // Reset Result Response
@@ -96,11 +96,11 @@ export default function SampleSheetChecker() {
       })
       .catch((error) => {
         setIsLoading(false);
-        setIsError(true)
+        setIsError(true);
       });
   }
-  function displayLog(log_file) {
-    const arrayInput = log_file.split("\n");
+  function displayLog(logFile) {
+    const arrayInput = logFile.split("\n");
     return (
       <>
         <b>Logs:</b>
@@ -139,30 +139,34 @@ export default function SampleSheetChecker() {
     if (isValidated) {
       // Parse data from response
       const alertVariant =
-        validationResponse.checkStatus === "PASS" ? "success" : "danger";
-      const errorMessage = validationResponse.errorMessage;
-      const log_file = validationResponse.log_file;
+        validationResponse.check_status === "PASS" ? "success" : "danger";
+      const errorMessage = validationResponse.error_message;
+      const logFile = validationResponse.log_file;
 
       return (
         <Row>
           <Col xs={12}>
             <Alert variant={alertVariant}>
               <Alert.Heading>
-                Check Result: <b>{validationResponse.checkStatus}</b>
+                Check Result: <b>{validationResponse.check_status}</b>
               </Alert.Heading>
-              {errorMessage || log_file ? (
+              {errorMessage || logFile ? (
                 <>
                   <hr />
                   {errorMessage ? displayErrorMessage(errorMessage) : <></>}
-                  {log_file ? displayLog(log_file) : <></>}
+                  {logFile ? displayLog(logFile) : <></>}
                 </>
               ) : (
                 <></>
               )}
             </Alert>
-            {log_file ? (
+            {logFile ? (
               <div className="d-grid">
-                <Button variant="outline-secondary" block onClick={() => download(log_file)}>
+                <Button
+                  variant="outline-secondary"
+                  block
+                  onClick={() => download(logFile)}
+                >
                   Download logs as a txt file
                 </Button>
               </div>
@@ -227,7 +231,7 @@ export default function SampleSheetChecker() {
         </Row>
 
         {displayResult(validationResponse)}
-        <ShowError handleError={handleError} isError={isError}/>
+        <ShowError handleError={handleError} isError={isError} />
       </Container>
     </div>
   );
