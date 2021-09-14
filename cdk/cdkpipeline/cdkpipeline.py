@@ -95,6 +95,7 @@ class CdkPipelineStack(cdk.Stack):
                 commands = [
                     "echo $(ls)",
                     "cd react",
+                    "echo $(ls)",
                     "source get_env.sh",
                     "npm run build",
                     "npm run deploy"
