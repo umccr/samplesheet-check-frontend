@@ -13,7 +13,7 @@ class SampleSheetCheckStage(cdk.Stage):
     def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        # Create the Bucket Stack, which uses the bucket_stack.py to create a S3 bucket
+        # Create stack defined on stacks folder
         SampleSheetCheckFrontEndStack(self, "SampleSheetCheckFrontEnd")
 
 # Class for the CDK pipeline stack
@@ -82,5 +82,17 @@ class CdkPipelineStack(cdk.Stack):
             SampleSheetCheckStage(
                 self,
                 "SampleSheetCheckFrontEndStage",
+            )
+        )
+
+        react_build_stage = pipeline.add_stage(
+            stage_name="ReactBuild",
+        )
+
+        react_build_stage.add_actions(
+            pipelines.ShellScriptAction(
+                action_name = "BuildScript",
+                commands = ["echo $(ls)"],
+                additional_artifacts = [source_artifact]
             )
         )
