@@ -15,8 +15,7 @@ app = cdk.App()
 CdkPipelineStack(
   app,
   "CdkPipeline",
-  env=aws_env,
-  constant=aws_env
+  env=aws_env
 )
 
 app.synth()
