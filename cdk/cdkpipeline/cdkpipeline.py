@@ -59,8 +59,6 @@ class CdkPipelineStack(cdk.Stack):
                 cloud_assembly_artifact = cloud_artifact,
                 source_artifact = source_artifact,
                 install_commands = [
-                    "echo update via commit",
-                    # "cd cdk",
                     "npm install -g aws-cdk",
                     "gem install cfn-nag",
                     "pip install -r requirements.txt"
@@ -81,7 +79,6 @@ class CdkPipelineStack(cdk.Stack):
 
         # Deploy infrastructure
         pipeline.add_application_stage(
-
             SampleSheetCheckStage(
                 self,
                 "SampleSheetCheckFrontEndStage",
