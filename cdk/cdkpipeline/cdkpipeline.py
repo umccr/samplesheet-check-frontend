@@ -96,9 +96,12 @@ class CdkPipelineStack(cdk.Stack):
                     "echo $(ls)",
                     "cd react",
                     "echo $(ls)",
-                    ". get_env.sh",
-                    "npm run build",
-                    "npm run deploy"
+                    "aws --version",
+                    "jq --version",
+                    "aws ssm get-parameter --name '/data_portal/client/cog_app_client_id_local'"
+
+                    # "npm run build",
+                    # "npm run deploy"
                 ],
                 additional_artifacts = [source_artifact]
             )
