@@ -12,7 +12,7 @@ The directories are divided into two:
     `cd cdk && source .venv/bin/activate && cdk deploy`
 
 2. Deploying react code to the aws infrastructure. [From the root directoy]  
-    `cd react && source fetch_react_env.sh && npm run deploy`
+    `cd react && source get_env.sh && npm run build && npm run deploy`
 
 ### To Run Locally
 
