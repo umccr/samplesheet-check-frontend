@@ -42,7 +42,7 @@ class CdkPipelineStack(cdk.Stack):
             owner = "umccr",
             repo = "samplesheet-check-frontend",
             branch = "implement-pipeline",
-            action_name = "CodeCommit"
+            action_name = "Source"
         )
 
         # build_spec = codebuild.BuildSpec.from_source_filename("/cdk/buildspec.yml")
@@ -59,7 +59,7 @@ class CdkPipelineStack(cdk.Stack):
                 cloud_assembly_artifact = cloud_artifact,
                 source_artifact = source_artifact,
                 install_commands = [
-                    "echo update via commit"
+                    "echo update via commit",
                     # "cd cdk",
                     "npm install -g aws-cdk",
                     "gem install cfn-nag",
