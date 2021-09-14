@@ -92,7 +92,13 @@ class CdkPipelineStack(cdk.Stack):
         react_build_stage.add_actions(
             pipelines.ShellScriptAction(
                 action_name = "BuildScript",
-                commands = ["echo $(ls)"],
+                commands = [
+                    "echo $(ls)",
+                    "cd react",
+                    "source get_env.sh",
+                    "npm run build",
+                    "npm run deploy"
+                ],
                 additional_artifacts = [source_artifact]
             )
         )
