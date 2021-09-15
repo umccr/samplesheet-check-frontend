@@ -1,12 +1,22 @@
 # UMCCR client CDK for Samplesheet Check
 
-This cdk will built a AWS resources to deploy react samplesheet validation. 
-
-The resouce used are:
-- AWS cloudfront
-- AWS S3 bucket
+This cdk will build an AWS cloud infrastructure for the UMCCR samplesheet check. 
 
 
+
+
+The directories:
+- *cdkpipeline* - Contain the stack for the pipeline.
+- *stacks* - Contains the samplesheet frontend check.
+
+## Resources
+
+- **AWS cloudfront**  
+    Access s3 bucket react code
+- **AWS S3 bucket**  
+    Store react build code
+- **Route 53**  
+    Setup DNS for the samplesheet check for cloudfront
 
 # The Setup
 
@@ -44,20 +54,10 @@ Once the virtualenv is activated, you can install the required dependencies.
 $ pip install -r requirements.txt
 ```
 
-At this point you can now synthesize the CloudFormation template for this code.
 
-```
-$ cdk synth
-```
+# CDK pipeline deploy
 
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
+When the pipeline deployed, changes to this repository will automatically deployed on the infrastructure.
+Initial deployment of the pipeline is required to setup the pipeline.
 
-## Useful commands
-
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
+`cdk deploy CdkPipeline --profile dev`
