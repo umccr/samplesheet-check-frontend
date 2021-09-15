@@ -46,7 +46,6 @@ class CdkPipelineStack(cdk.Stack):
             action_name = "Source"
         )
 
-        # build_spec = codebuild.BuildSpec.from_source_filename("/cdk/buildspec.yml")
 
         # Create CDK pipeline
         pipeline = pipelines.CdkPipeline(
@@ -70,7 +69,6 @@ class CdkPipelineStack(cdk.Stack):
                     "cfn_nag_scan --input-path ./cfnnag_output"
                 ],
                 action_name = "Synth",
-                # build_spec = build_spec,
                 project_name = "cdk_synth",
                 subdirectory = "cdk"
             )
@@ -106,12 +104,9 @@ class CdkPipelineStack(cdk.Stack):
                     "export REACT_APP_REGION=ap-southeast-2",
 
                     "export REACT_APP_COG_USER_POOL_ID=$(aws ssm get-parameter --name '/data_portal/client/cog_user_pool_id' | jq -r .Parameter.Value)",
-                    # "export REACT_APP_COG_APP_CLIENT_ID_LOCAL=$"cog_app_client_id_local,
                     "export REACT_APP_COG_APP_CLIENT_ID_STAGE=$(aws ssm get-parameter --name '/sscheck/client/cog_app_client_id_stage' | jq -r .Parameter.Value)",
 
                     "export REACT_APP_OAUTH_DOMAIN=$(aws ssm get-parameter --name '/data_portal/client/oauth_domain' | jq -r .Parameter.Value)",
-                    # export REACT_APP_OAUTH_REDIRECT_IN_LOCAL=$(aws ssm get-parameter --name '/data_portal/client/oauth_redirect_in_local' | jq -r .Parameter.Value),
-                    # export REACT_APP_OAUTH_REDIRECT_OUT_LOCAL=$(aws ssm get-parameter --name '/data_portal/client/oauth_redirect_out_local' | jq -r .Parameter.Value),
                     "export REACT_APP_OAUTH_REDIRECT_IN_STAGE=$(aws ssm get-parameter --name '/sscheck/client/oauth_redirect_in_stage' | jq -r .Parameter.Value)",
                     "export REACT_APP_OAUTH_REDIRECT_OUT_STAGE==$(aws ssm get-parameter --name '/sscheck/client/oauth_redirect_out_stage' | jq -r .Parameter.Value)",
                     "env | grep REACT",
@@ -131,8 +126,11 @@ class CdkPipelineStack(cdk.Stack):
                     ),
                     iam.PolicyStatement(
                         actions=[
-                            "s3:*"
-                            ],
+                            "s3:DeleteObject",
+                            "s3:GetObject",
+                            "s3:ListBucket",
+                            "s3:PutObject"
+                        ],
                         effect=iam.Effect.ALLOW,
                         resources=[
                             "arn:aws:s3:::sscheck-front-end-code-dev",
