@@ -77,7 +77,7 @@ stage=$(aws ssm get-parameter --name '/sscheck/stage' | jq -r .Parameter.Value)
 
 export REACT_APP_BUCKET_NAME=$bucket_name
 export REACT_APP_LAMBDA_API_DOMAIN=$lambda_api_domain
-export REACT_APP_STAGE=$stage
+export REACT_APP_STAGE=localhost
 export REACT_APP_REGION=ap-southeast-2
 
 export REACT_APP_COG_USER_POOL_ID=$cog_user_pool_id

@@ -8,7 +8,7 @@ from aws_cdk import (
     aws_codepipeline_actions as codepipeline_actions,
     aws_iam as iam
 )
-from stack.sscheck import SampleSheetCheckFrontEndStack
+from stacks.sscheck import SampleSheetCheckFrontEndStack
 
 class SampleSheetCheckStage(cdk.Stage):
     def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
@@ -70,7 +70,7 @@ class CdkPipelineStack(cdk.Stack):
                 ],
                 action_name = "Synth",
                 project_name = "cdk_synth",
-                subdirectory = "cdk"
+                subdirectory = "deploy"
             )
 
         )
@@ -92,12 +92,6 @@ class CdkPipelineStack(cdk.Stack):
             pipelines.ShellScriptAction(
                 action_name = "BuildScript",
                 commands = [
-                    "echo $(ls)",
-                    "cd react",
-                    "echo $(ls)",
-                    "aws --version",
-                    "jq --version",
-                    "npm -v",
                     "export REACT_APP_BUCKET_NAME=$(aws ssm get-parameter --name '/sscheck/bucket_name' | jq -r .Parameter.Value)",
                     "export REACT_APP_LAMBDA_API_DOMAIN=$(aws ssm get-parameter --name '/sscheck/lambda-api-domain' | jq -r .Parameter.Value)",
                     "export REACT_APP_STAGE=$(aws ssm get-parameter --name '/sscheck/stage' | jq -r .Parameter.Value)",
