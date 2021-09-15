@@ -42,7 +42,7 @@ class CdkPipelineStack(cdk.Stack):
             output = source_artifact,
             owner = "umccr",
             repo = "samplesheet-check-frontend",
-            branch = "implement-pipeline",
+            branch = "main",
             action_name = "Source"
         )
 
