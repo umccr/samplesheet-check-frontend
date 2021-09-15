@@ -25,7 +25,7 @@ class CdkPipelineStack(cdk.Stack):
 
         # Load SSM parameter for GitHub repo (Created via Console)
         codestar_arn = ssm.StringParameter.from_string_parameter_attributes(self, "codestarArn",
-            parameter_name="/sscheck/codestar-connection-arn"
+            parameter_name="codestar_github_arn"
         ).string_value
 
         cloud_artifact = codepipeline.Artifact(
