@@ -99,17 +99,45 @@ class CdkPipelineStack(cdk.Stack):
                     "echo $(ls)",
                     "aws --version",
                     "jq --version",
-                    "aws ssm get-parameter --name '/data_portal/client/cog_app_client_id_local'"
+                    "npm -v",
+                    "export REACT_APP_BUCKET_NAME=$(aws ssm get-parameter --name '/sscheck/bucket_name' | jq -r .Parameter.Value)",
+                    "export REACT_APP_LAMBDA_API_DOMAIN=$(aws ssm get-parameter --name '/sscheck/lambda-api-domain' | jq -r .Parameter.Value)",
+                    "export REACT_APP_STAGE=$(aws ssm get-parameter --name '/sscheck/stage' | jq -r .Parameter.Value)",
+                    "export REACT_APP_REGION=ap-southeast-2",
 
-                    # "npm run build",
-                    # "npm run deploy"
+                    "export REACT_APP_COG_USER_POOL_ID=$(aws ssm get-parameter --name '/data_portal/client/cog_user_pool_id' | jq -r .Parameter.Value)",
+                    # "export REACT_APP_COG_APP_CLIENT_ID_LOCAL=$"cog_app_client_id_local,
+                    "export REACT_APP_COG_APP_CLIENT_ID_STAGE=$(aws ssm get-parameter --name '/sscheck/client/cog_app_client_id_stage' | jq -r .Parameter.Value)",
+
+                    "export REACT_APP_OAUTH_DOMAIN=$(aws ssm get-parameter --name '/data_portal/client/oauth_domain' | jq -r .Parameter.Value)",
+                    # export REACT_APP_OAUTH_REDIRECT_IN_LOCAL=$(aws ssm get-parameter --name '/data_portal/client/oauth_redirect_in_local' | jq -r .Parameter.Value),
+                    # export REACT_APP_OAUTH_REDIRECT_OUT_LOCAL=$(aws ssm get-parameter --name '/data_portal/client/oauth_redirect_out_local' | jq -r .Parameter.Value),
+                    "export REACT_APP_OAUTH_REDIRECT_IN_STAGE=$(aws ssm get-parameter --name '/sscheck/client/oauth_redirect_in_stage' | jq -r .Parameter.Value)",
+                    "export REACT_APP_OAUTH_REDIRECT_OUT_STAGE==$(aws ssm get-parameter --name '/sscheck/client/oauth_redirect_out_stage' | jq -r .Parameter.Value)",
+                    "env | grep REACT",
+                    "npm i react-scripts",
+                    "npm run build",
+                    "npm run deploy"
                 ],
                 additional_artifacts = [source_artifact],
                 role_policy_statements = [
                     iam.PolicyStatement(
                         actions=["ssm:GetParameter"],
                         effect=iam.Effect.ALLOW,
-                        resources=["arn:aws:ssm:ap-southeast-2:843407916570:parameter/sscheck"]
+                        resources=[
+                            "arn:aws:ssm:ap-southeast-2:843407916570:parameter/sscheck/*",
+                            "arn:aws:ssm:ap-southeast-2:843407916570:parameter/data_portal/*"
+                        ]
+                    ),
+                    iam.PolicyStatement(
+                        actions=[
+                            "s3:*"
+                            ],
+                        effect=iam.Effect.ALLOW,
+                        resources=[
+                            "arn:aws:s3:::sscheck-front-end-code-dev",
+                            "arn:aws:s3:::sscheck-front-end-code-dev/*"
+                        ]
                     )
                 ]
             )
