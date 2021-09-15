@@ -5,7 +5,8 @@ from aws_cdk import (
     core as cdk,
     aws_codepipeline as codepipeline,
     aws_codebuild as codebuild,
-    aws_codepipeline_actions as codepipeline_actions
+    aws_codepipeline_actions as codepipeline_actions,
+    aws_iam as iam
 )
 from stack.sscheck import SampleSheetCheckFrontEndStack
 
@@ -103,6 +104,13 @@ class CdkPipelineStack(cdk.Stack):
                     # "npm run build",
                     # "npm run deploy"
                 ],
-                additional_artifacts = [source_artifact]
+                additional_artifacts = [source_artifact],
+                role_policy_statements = [
+                    iam.PolicyStatement(
+                        actions=["ssm:GetParameter"],
+                        effect=iam.Effect.ALLOW,
+                        resources=["arn:aws:ssm:ap-southeast-2:843407916570:parameter/sscheck"]
+                    )
+                ]
             )
         )
