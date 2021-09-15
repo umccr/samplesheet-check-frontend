@@ -4,7 +4,7 @@ from aws_cdk import (
     pipelines,
     core as cdk,
     aws_codepipeline as codepipeline,
-    aws_codebuild as codebuild,
+    aws_s3 as s3,
     aws_codepipeline_actions as codepipeline_actions,
     aws_iam as iam
 )
@@ -87,6 +87,17 @@ class CdkPipelineStack(cdk.Stack):
         react_build_stage = pipeline.add_stage(
             stage_name="ReactBuild",
         )
+        front_end_bucket_name=ssm.StringParameter.from_string_parameter_attributes(
+            self,
+            "FrontEndBucketName",
+            parameter_name="/sscheck/bucket_name"
+        ).string_value
+
+        front_end_bucket_arn = s3.Bucket.from_bucket_name(
+            self,
+            "FrontEndBucket",
+            bucket_name=front_end_bucket_name
+        ).bucket_arn
 
         react_build_stage.add_actions(
             pipelines.ShellScriptAction(
@@ -127,8 +138,8 @@ class CdkPipelineStack(cdk.Stack):
                         ],
                         effect=iam.Effect.ALLOW,
                         resources=[
-                            "arn:aws:s3:::sscheck-front-end-code-dev",
-                            "arn:aws:s3:::sscheck-front-end-code-dev/*"
+                            front_end_bucket_arn,
+                            front_end_bucket_arn+"/*"
                         ]
                     )
                 ]
