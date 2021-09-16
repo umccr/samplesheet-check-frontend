@@ -14,8 +14,13 @@ app = cdk.App()
 
 CdkPipelineStack(
   app,
-  "CdkPipeline",
-  env=aws_env
+  "SampleSheetFrontEndCdkPipeline",
+  stack_name = "cdkpipeline-sscheck-front-end-dev",
+  env=aws_env,
+  tags={
+    "environment":"dev",
+    "stack":"cdkpipeline-sscheck-front-end-dev"
+  }
 )
 
 app.synth()

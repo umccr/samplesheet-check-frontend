@@ -6,7 +6,8 @@ from aws_cdk import (
     aws_codepipeline as codepipeline,
     aws_s3 as s3,
     aws_codepipeline_actions as codepipeline_actions,
-    aws_iam as iam
+    aws_iam as iam,
+    aws_codebuild as codebuild
 )
 from stacks.sscheck import SampleSheetCheckFrontEndStack
 
@@ -52,7 +53,7 @@ class CdkPipelineStack(cdk.Stack):
             self,
             "CDKPipeline",
             cloud_assembly_artifact = cloud_artifact,
-            pipeline_name="CDKSampleSheetCheckFrontEnd",
+            pipeline_name="sscheck-front-end-dev",
             source_action = code_star_action,
             synth_action = pipelines.SimpleSynthAction(
                 synth_command = "cdk synth",
@@ -64,12 +65,13 @@ class CdkPipelineStack(cdk.Stack):
                     "pip install -r requirements.txt"
                 ],
                 test_commands = [
+                    "cdk synth",
                     "mkdir ./cfnnag_output",
                     "for template in $(find ./cdk.out -type f -maxdepth 2 -name '*.template.json'); do cp $template ./cfnnag_output; done",
                     "cfn_nag_scan --input-path ./cfnnag_output"
                 ],
                 action_name = "Synth",
-                project_name = "cdk_synth",
+                project_name = "sscheck-front-end-synth-dev",
                 subdirectory = "deploy"
             )
 
@@ -102,18 +104,42 @@ class CdkPipelineStack(cdk.Stack):
         react_build_stage.add_actions(
             pipelines.ShellScriptAction(
                 action_name = "BuildScript",
+                environment_variables = {
+                    "REACT_APP_REGION" : "ap-southeast-2",
+                    "REACT_APP_BUCKET_NAME" : codebuild.BuildEnvironmentVariable(
+                        value="/sscheck/bucket_name",
+                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
+                    ),
+                    "REACT_APP_LAMBDA_API_DOMAIN" : codebuild.BuildEnvironmentVariable(
+                        value="/sscheck/lambda-api-domain",
+                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
+                    ),
+                    "REACT_APP_STAGE" : codebuild.BuildEnvironmentVariable(
+                        value="/sscheck/stage",
+                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
+                    ),
+                    "REACT_APP_COG_USER_POOL_ID" : codebuild.BuildEnvironmentVariable(
+                        value="/data_portal/client/cog_user_pool_id",
+                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
+                    ),
+                    "REACT_APP_COG_APP_CLIENT_ID_STAGE" : codebuild.BuildEnvironmentVariable(
+                        value="/sscheck/client/cog_app_client_id_stage",
+                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
+                    ),
+                    "REACT_APP_OAUTH_DOMAIN" : codebuild.BuildEnvironmentVariable(
+                        value="/data_portal/client/oauth_domain",
+                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
+                    ),
+                    "REACT_APP_OAUTH_REDIRECT_IN_STAGE" : codebuild.BuildEnvironmentVariable(
+                        value="/sscheck/client/oauth_redirect_in_stage",
+                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
+                    ),
+                    "REACT_APP_OAUTH_REDIRECT_OUT_STAGE" : codebuild.BuildEnvironmentVariable(
+                        value="/sscheck/client/oauth_redirect_out_stage",
+                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
+                    ),
+                },
                 commands = [
-                    "export REACT_APP_BUCKET_NAME=$(aws ssm get-parameter --name '/sscheck/bucket_name' | jq -r .Parameter.Value)",
-                    "export REACT_APP_LAMBDA_API_DOMAIN=$(aws ssm get-parameter --name '/sscheck/lambda-api-domain' | jq -r .Parameter.Value)",
-                    "export REACT_APP_STAGE=$(aws ssm get-parameter --name '/sscheck/stage' | jq -r .Parameter.Value)",
-                    "export REACT_APP_REGION=ap-southeast-2",
-
-                    "export REACT_APP_COG_USER_POOL_ID=$(aws ssm get-parameter --name '/data_portal/client/cog_user_pool_id' | jq -r .Parameter.Value)",
-                    "export REACT_APP_COG_APP_CLIENT_ID_STAGE=$(aws ssm get-parameter --name '/sscheck/client/cog_app_client_id_stage' | jq -r .Parameter.Value)",
-
-                    "export REACT_APP_OAUTH_DOMAIN=$(aws ssm get-parameter --name '/data_portal/client/oauth_domain' | jq -r .Parameter.Value)",
-                    "export REACT_APP_OAUTH_REDIRECT_IN_STAGE=$(aws ssm get-parameter --name '/sscheck/client/oauth_redirect_in_stage' | jq -r .Parameter.Value)",
-                    "export REACT_APP_OAUTH_REDIRECT_OUT_STAGE==$(aws ssm get-parameter --name '/sscheck/client/oauth_redirect_out_stage' | jq -r .Parameter.Value)",
                     "env | grep REACT",
                     "npm i react-scripts",
                     "npm run build",
@@ -126,7 +152,7 @@ class CdkPipelineStack(cdk.Stack):
                         effect=iam.Effect.ALLOW,
                         resources=[
                             "arn:aws:ssm:ap-southeast-2:843407916570:parameter/sscheck/*",
-                            "arn:aws:ssm:ap-southeast-2:843407916570:parameter/data_portal/*"
+                            "arn:aws:ssm:ap-southeast-2:843407916570:parameter/data_portal/client/*"
                         ]
                     ),
                     iam.PolicyStatement(
