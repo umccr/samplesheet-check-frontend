@@ -16,7 +16,11 @@ class SampleSheetCheckStage(cdk.Stage):
         super().__init__(scope, construct_id, **kwargs)
 
         # Create stack defined on stacks folder
-        SampleSheetCheckFrontEndStack(self, "SampleSheetCheckFrontEnd")
+        SampleSheetCheckFrontEndStack(
+            self,
+            "SampleSheetCheckFrontEnd",
+            stack_name="sscheck-front-end-stack-dev"
+        )
 
 # Class for the CDK pipeline stack
 class CdkPipelineStack(cdk.Stack):
@@ -55,6 +59,7 @@ class CdkPipelineStack(cdk.Stack):
             cloud_assembly_artifact = cloud_artifact,
             pipeline_name="sscheck-front-end-dev",
             source_action = code_star_action,
+            cross_account_keys =False,
             synth_action = pipelines.SimpleSynthAction(
                 synth_command = "cdk synth",
                 cloud_assembly_artifact = cloud_artifact,
@@ -105,7 +110,10 @@ class CdkPipelineStack(cdk.Stack):
             pipelines.ShellScriptAction(
                 action_name = "BuildScript",
                 environment_variables = {
-                    "REACT_APP_REGION" : "ap-southeast-2",
+                    "REACT_APP_REGION" : codebuild.BuildEnvironmentVariable(
+                        value="ap-southeast-2",
+                        type=codebuild.BuildEnvironmentVariableType.PLAINTEXT
+                    ),
                     "REACT_APP_BUCKET_NAME" : codebuild.BuildEnvironmentVariable(
                         value="/sscheck/bucket_name",
                         type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
