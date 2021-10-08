@@ -19,7 +19,7 @@ class SampleSheetCheckStage(cdk.Stage):
         SampleSheetCheckFrontEndStack(
             self,
             "SampleSheetCheckFrontEnd",
-            stack_name="sscheck-front-end-stack-dev"
+            stack_name="sscheck-front-end-stack"
         )
 
 # Class for the CDK pipeline stack
