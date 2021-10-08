@@ -19,10 +19,10 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
         ).string_value
 
         # Query domain_name config from SSM Parameter Store (Created via Conosle)
-        domain_name = ssm.StringParameter.from_string_parameter_name(
+        umccr_domain = ssm.StringParameter.from_string_parameter_name(
             self,
             "DomainName",
-            string_parameter_name="/sscheck/domain",
+            string_parameter_name="umccr_domain",
         ).string_value
 
         # --- Query deployment env specific config from SSM Parameter Store
@@ -95,7 +95,7 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             enable_ip_v6 = False,
             viewer_certificate=cloudfront.ViewerCertificate.from_acm_certificate(
                 certificate=cert_use1,
-                aliases=[domain_name],
+                aliases=["sscheck." + umccr_domain],
                 security_policy=cloudfront.SecurityPolicyProtocol.TLS_V1,
                 ssl_method=cloudfront.SSLMethod.SNI
             )

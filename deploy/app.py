@@ -5,9 +5,8 @@ from aws_cdk import core as cdk
 
 from pipelines.cdkpipeline import CdkPipelineStack
 
-account_id = os.environ.get('CDK_DEFAULT_ACCOUNT')
-aws_region = os.environ.get('CDK_DEFAULT_REGION')
-aws_env = {'account': account_id , 'region': aws_region}
+
+aws_env = {'account': "843407916570" , 'region': "ap-southeast-2"}
 
  
 app = cdk.App()
@@ -15,11 +14,11 @@ app = cdk.App()
 CdkPipelineStack(
   app,
   "SampleSheetFrontEndCdkPipeline",
-  stack_name = "cdkpipeline-sscheck-front-end-dev",
+  stack_name = "cdkpipeline-sscheck-front-end",
   env=aws_env,
+  const= aws_env,
   tags={
-    "environment":"dev",
-    "stack":"cdkpipeline-sscheck-front-end-dev"
+    "stack":"cdkpipeline-sscheck-front-end"
   }
 )
 
