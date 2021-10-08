@@ -122,15 +122,11 @@ class CdkPipelineStack(cdk.Stack):
                         value="/sscheck/lambda-api-domain",
                         type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
                     ),
-                    "REACT_APP_STAGE" : codebuild.BuildEnvironmentVariable(
-                        value="/sscheck/stage",
-                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
-                    ),
                     "REACT_APP_COG_USER_POOL_ID" : codebuild.BuildEnvironmentVariable(
                         value="/data_portal/client/cog_user_pool_id",
                         type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
                     ),
-                    "REACT_APP_COG_APP_CLIENT_ID_STAGE" : codebuild.BuildEnvironmentVariable(
+                    "REACT_APP_COG_APP_CLIENT_ID" : codebuild.BuildEnvironmentVariable(
                         value="/sscheck/client/cog_app_client_id_stage",
                         type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
                     ),
@@ -138,11 +134,11 @@ class CdkPipelineStack(cdk.Stack):
                         value="/data_portal/client/oauth_domain",
                         type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
                     ),
-                    "REACT_APP_OAUTH_REDIRECT_IN_STAGE" : codebuild.BuildEnvironmentVariable(
+                    "REACT_APP_OAUTH_REDIRECT_IN" : codebuild.BuildEnvironmentVariable(
                         value="/sscheck/client/oauth_redirect_in_stage",
                         type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
                     ),
-                    "REACT_APP_OAUTH_REDIRECT_OUT_STAGE" : codebuild.BuildEnvironmentVariable(
+                    "REACT_APP_OAUTH_REDIRECT_OUT" : codebuild.BuildEnvironmentVariable(
                         value="/sscheck/client/oauth_redirect_out_stage",
                         type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
                     ),

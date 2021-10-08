@@ -3,8 +3,6 @@
 This cdk will build an AWS cloud infrastructure for the UMCCR samplesheet check. 
 
 
-
-
 The directories:
 - *cdkpipeline* - Contain the stack for the pipeline.
 - *stacks* - Contains the samplesheet frontend check.
