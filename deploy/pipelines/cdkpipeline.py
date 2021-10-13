@@ -27,7 +27,7 @@ class SampleSheetCheckStage(cdk.Stage):
 
 class CdkPipelineStack(cdk.Stack):
 
-    def __init__(self, scope: cdk.Construct, construct_id: str, const, **kwargs) -> None:
+    def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         # Load SSM parameter for GitHub repo (Created via Console)
@@ -155,8 +155,8 @@ class CdkPipelineStack(cdk.Stack):
                         actions=["ssm:GetParameter"],
                         effect=iam.Effect.ALLOW,
                         resources=[
-                            "arn:aws:ssm:%s:%s:parameter/sscheck/*" % (const["region"], const["account"]),
-                            "arn:aws:ssm:%s:%s:parameter/data_portal/client/*" % (const["region"], const["account"])
+                            "arn:aws:ssm:%s:%s:parameter/sscheck/*" % (self.region, self.account),
+                            "arn:aws:ssm:%s:%s:parameter/data_portal/client/*" % (self.region, self.account)
                         ]
                     ),
                     iam.PolicyStatement(
