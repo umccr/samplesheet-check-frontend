@@ -10,13 +10,15 @@ from aws_cdk import (
 
 class SampleSheetCheckFrontEndStack(cdk.Stack):
 
-    def __init__(self, scope: cdk.Construct, construct_id: str,constants=None, **kwargs) -> None:
+    def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        # Load SSM parameter for bucket name ( Created via Console)
-        bucket_name = ssm.StringParameter.from_string_parameter_attributes(self, "bucketValue",
-            parameter_name="/sscheck/bucket_name"
-        ).string_value
+        # Defining app constants
+        app_stage = self.node.try_get_context("app_stage")
+        props = self.node.try_get_context("props")
+
+        # Defined Bucket name
+        bucket_name = props["bucket_name"][app_stage]
 
         # Query domain_name config from SSM Parameter Store (Created via Conosle)
         umccr_domain = ssm.StringParameter.from_string_parameter_name(
@@ -39,20 +41,30 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             string_parameter_name="hosted_zone_name"
         ).string_value
 
-        cert_use1_arn = ssm.StringParameter.from_string_parameter_name(
+        # Fetch existing hosted_zone
+        hosted_zone = route53.HostedZone.from_hosted_zone_attributes(
             self,
-            "SSLCertUSE1ARN",
-            string_parameter_name="cert_use1_arn",
+            "HostedZone",
+            hosted_zone_id=hosted_zone_id,
+            zone_name=hosted_zone_name,
         )
 
-        cert_use1 = acm.Certificate.from_certificate_arn(
+        cert_use1 = acm.DnsValidatedCertificate(
             self,
-            "SSLCertUSE1",
-            certificate_arn=cert_use1_arn.string_value,
+            "SSLCertificateUSE1StatusPage",
+            hosted_zone=hosted_zone,
+            region="us-east-1",
+            domain_name="status.data." + umccr_domain,
+            subject_alternative_names=props["alias_domain_name"][app_stage],
+            validation=acm.CertificateValidation.from_dns(
+                hosted_zone=hosted_zone
+            )
         )
 
         # Creating bucket for the build directory code
-        samplesheet_client_bucket = s3.Bucket(self, "umccr-samplesheet-script", 
+        samplesheet_client_bucket = s3.Bucket(
+            self,
+            "umccr-samplesheet-script", 
             bucket_name = bucket_name,
             auto_delete_objects = True,
             removal_policy = cdk.RemovalPolicy.DESTROY,
@@ -101,13 +113,6 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             )
         )
 
-        # Fetch existing hosted_zone
-        hosted_zone = route53.HostedZone.from_hosted_zone_attributes(
-            self,
-            "HostedZone",
-            hosted_zone_id=hosted_zone_id,
-            zone_name=hosted_zone_name,
-        )
 
         # Create A-Record to Route53
         route53.ARecord(
