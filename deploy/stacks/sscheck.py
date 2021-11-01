@@ -48,17 +48,12 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             hosted_zone_id=hosted_zone_id,
             zone_name=hosted_zone_name,
         )
-
-        cert_use1 = acm.DnsValidatedCertificate(
+        cert_use1 = acm.Certificate(
             self,
-            "SSLCertificateUSE1StatusPage",
-            hosted_zone=hosted_zone,
-            region="us-east-1",
-            domain_name="status.data." + umccr_domain,
+            "SSLCertificateUSE1SScheckFrontEnd",
+            domain_name= "sscheck." + umccr_domain,
             subject_alternative_names=props["alias_domain_name"][app_stage],
-            validation=acm.CertificateValidation.from_dns(
-                hosted_zone=hosted_zone
-            )
+            validation=acm.CertificateValidation.from_dns()
         )
 
         # Creating bucket for the build directory code
