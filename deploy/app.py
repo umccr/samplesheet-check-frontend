@@ -24,8 +24,8 @@ props = {
         "prod": "sscheck-frontend"
     },
     "pipeline_artifact_bucket_name" :{
-        "dev": "data-portal-status-page-artifact-dev",
-        "prod": "data-portal-status-page-artifact-prod"
+        "dev": "sscheck-front-end-artifact-dev",
+        "prod": "sscheck-front-end-artifact-prod"
     },
     "client_bucket_name": {
         "dev": "org.umccr.dev.data.sscheck",

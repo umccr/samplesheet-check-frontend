@@ -139,10 +139,8 @@ class PipelineStack(cdk.Stack):
                 actions=["ssm:GetParameter"],
                 effect=iam.Effect.ALLOW,
                 resources=[
-                    "arn:aws:ssm:%s:%s:parameter/data_portal/status_page/*" % (
-                        self.region, self.account),
-                    "arn:aws:ssm:%s:%s:parameter/data_portal/client/*" % (
-                        self.region, self.account)
+                    "arn:aws:ssm:%s:%s:parameter/sscheck/*" % (self.region, self.account),
+                    "arn:aws:ssm:%s:%s:parameter/data_portal/client/*" % (self.region, self.account)
                 ]
             )
         )
@@ -158,7 +156,7 @@ class PipelineStack(cdk.Stack):
                 effect=iam.Effect.ALLOW,
                 resources=[
                     front_end_bucket_arn,
-                    front_end_bucket_arn + "/*"
+                    front_end_bucket_arn+"/*"
                 ]
             )
         )
