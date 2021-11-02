@@ -52,10 +52,10 @@ app = cdk.App(
 PipelineStack(
   app,
   "SSCheckFrontEndPipeline",
-  stack_name = "cdkpipeline-sscheck-front-end",
+  stack_name = "sscheck-front-end-pipeline",
   tags={
     "stage": app_stage,
-    "stack":"cdkpipeline-sscheck-front-end"
+    "stack":"sscheck-front-end-pipeline"
   }
 )
 
@@ -66,7 +66,7 @@ NOTE: Please Validate SSL Certificate from predeployment stack thorugh console. 
 """
 PredeploymentStack(
     app,
-    "SScheckPredeploymentStack",
+    "SSCheckPredeploymentStack",
     stack_name="sscheck-front-end-predeployment",
     tags={
         "stage": app_stage,
