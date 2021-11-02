@@ -18,7 +18,7 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
         props = self.node.try_get_context("props")
 
         # Defined Bucket name
-        bucket_name = props["bucket_name"][app_stage]
+        bucket_name = props["client_bucket_name"][app_stage]
 
         # Query domain_name config from SSM Parameter Store (Created via Conosle)
         umccr_domain = ssm.StringParameter.from_string_parameter_name(
@@ -48,12 +48,17 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             hosted_zone_id=hosted_zone_id,
             zone_name=hosted_zone_name,
         )
-        cert_use1 = acm.Certificate(
+
+        cert_use1_arn = ssm.StringParameter.from_string_parameter_name(
+            self,
+            "SSLCertificateARN",
+            string_parameter_name="/sscheck/ssl_certificate_arn",
+        ).string_value
+
+        cert_use1 = acm.Certificate.from_certificate_arn(
             self,
             "SSLCertificateUSE1SScheckFrontEnd",
-            domain_name= "sscheck." + umccr_domain,
-            subject_alternative_names=props["alias_domain_name"][app_stage],
-            validation=acm.CertificateValidation.from_dns()
+            certificate_arn=cert_use1_arn
         )
 
         # Creating bucket for the build directory code

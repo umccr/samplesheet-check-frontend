@@ -16,19 +16,17 @@ The directories:
 - **Route 53**  
     Setup DNS for the samplesheet check for cloudfront
 
-# The Setup
+# Setting up
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+It is recomended to create a virtual environment for the app.
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
+To do so please follow the instruction below.
 
-To manually create a virtualenv on MacOS and Linux:
-
+Change your directory to the root of this readme file.
+```
+$ cd deploy
+```
+Create a virtual environment for the app.
 ```
 $ python3 -m venv .venv
 ```
@@ -40,12 +38,11 @@ step to activate your virtualenv.
 $ source .venv/bin/activate
 ```
 
-If you are a Windows platform, you would activate the virtualenv like this:
+If you are a Windows platform, you might try this:
 
 ```
 % .venv\Scripts\activate.bat
 ```
-
 Once the virtualenv is activated, you can install the required dependencies.
 
 ```
@@ -53,9 +50,30 @@ $ pip install -r requirements.txt
 ```
 
 
-# CDK pipeline deploy
+# Stack Deployment
 
-When the pipeline deployed, changes to this repository will automatically deployed on the infrastructure.
-Initial deployment of the pipeline is required to setup the pipeline.
+There are 3 stacks in this application:
+- *sscheck_front_end* - Contains the applications stack
+- *pipeline* - Contains the pipeline for the stack to run and self update
+- *predeployment* - Contains predeployment resource that is needed for other stacks.
 
-`cdk deploy CdkPipeline --profile dev`
+_*Predeployment stack must be deployed before any other stack to avoid stack rollback_
+
+To deploy the application stack. You will just need to deploy 2 stacks which are `predeployment` and `pipeline` stack. The pipeline stack will take care of the `sscheck_front_end` stack deployment.
+
+_*After the predeployment stack is deployed. SSL certificate must be validated before proceeding to pipeline stack_
+
+Instruction on deployment (**must** be in order):
+
+Deploy predeployment stack
+```
+$ cdk deploy SScheckPredeploymentStack --profile=dev
+```
+
+Validate SSL certificate through the console before proceeding.
+
+Deploy pipeline stack
+```
+$ cdk deploy SSCheckFrontEndCdkPipeline --profile=dev
+```
+

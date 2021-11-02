@@ -4,7 +4,8 @@ import os
 from aws_cdk import core as cdk
 
 # Import cdk pipeline stack
-from pipelines.cdkpipeline import CdkPipelineStack
+from stacks.pipeline_stack import PipelineStack
+from stacks.predeployment_stack import PredeploymentStack
 
 # Account environment and region
 account_id = os.environ.get('CDK_DEFAULT_ACCOUNT')
@@ -22,11 +23,15 @@ props = {
         "dev": "sscheck-frontend",
         "prod": "sscheck-frontend"
     },
-    "bucket_name": {
+    "pipeline_artifact_bucket_name" :{
+        "dev": "data-portal-status-page-artifact-dev",
+        "prod": "data-portal-status-page-artifact-prod"
+    },
+    "client_bucket_name": {
         "dev": "org.umccr.dev.data.sscheck",
         "prod": "org.umccr.prod.data.sscheck"
     },
-    "repository_source": "samplesheet-check-frontend",
+    "repository_source": "umccr/samplesheet-check-frontend",
     "branch_source": {
         "dev": "dev",
         "prod": "main"
@@ -44,14 +49,29 @@ app = cdk.App(
     }
 )
 
-CdkPipelineStack(
+PipelineStack(
   app,
-  "SSCheckFrontEndCdkPipeline",
+  "SSCheckFrontEndPipeline",
   stack_name = "cdkpipeline-sscheck-front-end",
   tags={
     "stage": app_stage,
     "stack":"cdkpipeline-sscheck-front-end"
   }
+)
+
+""" 
+The Predeployment stack are meant to be run once, before the pipeline stack is deployed.
+Failure to do so may result in a stack rollback on the pipeline stack.
+NOTE: Please Validate SSL Certificate from predeployment stack thorugh console. (for prod account)
+"""
+PredeploymentStack(
+    app,
+    "SScheckPredeploymentStack",
+    stack_name="sscheck-front-end-predeployment",
+    tags={
+        "stage": app_stage,
+        "stack": "sscheck-front-end-predeployment"
+    }
 )
 
 app.synth()

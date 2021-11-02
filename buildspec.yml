@@ -1,0 +1,13 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+    commands:
+      - npm i react-scripts
+  build:
+    commands:
+      - set -eu
+      - env | grep REACT
+      - npm run build
+      - npm run deploy
