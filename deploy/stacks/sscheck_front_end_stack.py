@@ -20,25 +20,18 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
         # Defined Bucket name
         bucket_name = props["client_bucket_name"][app_stage]
 
-        # Query domain_name config from SSM Parameter Store (Created via Conosle)
-        umccr_domain = ssm.StringParameter.from_string_parameter_name(
-            self,
-            "DomainName",
-            string_parameter_name="umccr_domain",
-        ).string_value
-
         # --- Query deployment env specific config from SSM Parameter Store
 
         hosted_zone_id = ssm.StringParameter.from_string_parameter_name(
             self,
             "HostedZoneID",
-            string_parameter_name="hosted_zone_id"
+            string_parameter_name="/hosted_zone/umccr/id"
         ).string_value
 
         hosted_zone_name = ssm.StringParameter.from_string_parameter_name(
             self,
             "HostedZoneName",
-            string_parameter_name="hosted_zone_name"
+            string_parameter_name="/hosted_zone/umccr/name"
         ).string_value
 
         # Fetch existing hosted_zone
@@ -107,7 +100,7 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             enable_ip_v6 = False,
             viewer_certificate=cloudfront.ViewerCertificate.from_acm_certificate(
                 certificate=cert_use1,
-                aliases=["sscheck." + umccr_domain],
+                aliases=props["alias_domain_name"][app_stage],
                 security_policy=cloudfront.SecurityPolicyProtocol.TLS_V1,
                 ssl_method=cloudfront.SSLMethod.SNI
             )
