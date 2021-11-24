@@ -3,7 +3,7 @@ import React from "react";
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 
-export default function ShowError({handleError, isError}) {
+export default function ShowError({handleError, isError, errorMessage}) {
 
   const handleClose = () => handleError(false);
 
@@ -14,6 +14,7 @@ export default function ShowError({handleError, isError}) {
           <Modal.Title>Error</Modal.Title>
         </Modal.Header>
         <Modal.Body>Sorry, An error has occured. Please try again!</Modal.Body>
+        <Modal.Body>{errorMessage}</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close

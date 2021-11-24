@@ -27,8 +27,8 @@ props = {
         "prod": "sscheck-front-end-artifact-prod"
     },
     "client_bucket_name": {
-        "dev": "org.umccr.dev.data.sscheck",
-        "prod": "org.umccr.prod.data.sscheck"
+        "dev": "org.umccr.dev.sscheck",
+        "prod": "org.umccr.prod.sscheck"
     },
     "repository_source": "umccr/samplesheet-check-frontend",
     "branch_source": {

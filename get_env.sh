@@ -12,8 +12,8 @@
 # USAGE:
 #
 # Otherwise source it standalone itself by:
-#     source start.sh
-#     source start.sh unset
+#     source get_env.sh
+#     source get_env.sh unset
 #
 # CAVEATS:
 # If your Portal Django backend is not running on :8000, then before start
@@ -58,11 +58,11 @@ if [[ "$cog_user_pool_id" == "" ]]; then
   echo "Halt, No valid AWS login session found. Please 'aws sso login --profile dev && export AWS_PROFILE=dev'"
   return 1
 fi
-cog_app_client_id_local=$(aws ssm get-parameter --name '/data_portal/client/cog_app_client_id_local' | jq -r .Parameter.Value)
+cog_app_client_id=$(aws ssm get-parameter --name '/data_portal/client/cog_app_client_id_local' | jq -r .Parameter.Value)
 
 oauth_domain=$(aws ssm get-parameter --name '/data_portal/client/oauth_domain' | jq -r .Parameter.Value)
-oauth_redirect_in_local=$(aws ssm get-parameter --name '/data_portal/client/oauth_redirect_in_local' | jq -r .Parameter.Value)
-oauth_redirect_out_local=$(aws ssm get-parameter --name '/data_portal/client/oauth_redirect_out_local' | jq -r .Parameter.Value)
+oauth_redirect_in=$(aws ssm get-parameter --name '/data_portal/client/oauth_redirect_in_local' | jq -r .Parameter.Value)
+oauth_redirect_out=$(aws ssm get-parameter --name '/data_portal/client/oauth_redirect_out_local' | jq -r .Parameter.Value)
 
 lambda_api_domain=$(aws ssm get-parameter --name '/sscheck/lambda-api-domain' | jq -r .Parameter.Value)
 bucket_name=$(aws ssm get-parameter --name '/sscheck/bucket_name' | jq -r .Parameter.Value)
@@ -73,9 +73,9 @@ export REACT_APP_LAMBDA_API_DOMAIN=$lambda_api_domain
 export REACT_APP_REGION=ap-southeast-2
 
 export REACT_APP_COG_USER_POOL_ID=$cog_user_pool_id
-export REACT_APP_COG_APP_CLIENT_ID_LOCAL=$cog_app_client_id_local
+export REACT_APP_COG_APP_CLIENT_ID=$cog_app_client_id
 
 export REACT_APP_OAUTH_DOMAIN=$oauth_domain
-export REACT_APP_OAUTH_REDIRECT_IN_LOCAL=$oauth_redirect_in_local
-export REACT_APP_OAUTH_REDIRECT_OUT_LOCAL=$oauth_redirect_out_local
+export REACT_APP_OAUTH_REDIRECT_IN=$oauth_redirect_in
+export REACT_APP_OAUTH_REDIRECT_OUT=$oauth_redirect_out
 env | grep REACT

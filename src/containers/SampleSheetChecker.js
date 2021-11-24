@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import LoaderButton from "../components/LoaderButton";
 import { API } from "aws-amplify";
@@ -21,8 +21,7 @@ export default function SampleSheetChecker() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Files variable
-  const fileRef = useRef(null);
-  const [isFileSelected, setIsFileSelected] = useState(false);
+  const [fileSelected, setFileSelected] = useState(false);
 
   // Response Variable
   const [validationResponse, setValidationResponse] = useState({});
@@ -32,6 +31,7 @@ export default function SampleSheetChecker() {
 
   // State for error
   const [isError, setIsError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('')
   function handleError(value) {
     setIsError(value);
   }
@@ -42,9 +42,9 @@ export default function SampleSheetChecker() {
     setIsValidated(false);
   }
 
-  function resetFileRef(){
-    fileRef.current = null
-    setIsFileSelected(false)
+  function resetFrom(){
+    document.getElementById("samplesheet-form").reset();
+    resetResponse();
   }
   
   // Handle Log Level Changes
@@ -55,12 +55,11 @@ export default function SampleSheetChecker() {
 
   // Handle File Changes
   function fileChangeHandler(event) {
-    fileRef.current = event.target.files[0];
-    if (fileRef.current) {
-      setIsFileSelected(true);
+    if (event.target.files[0]) {
+      setFileSelected(event.target.files[0]);
       resetResponse();
     } else {
-      setIsFileSelected(false);
+      setFileSelected(null);
     }
   }
 
@@ -70,8 +69,8 @@ export default function SampleSheetChecker() {
 
     // File Validation Size (Does not allow more than 512mb)
     if (
-      fileRef.current &&
-      fileRef.current.size > constant.MAX_ATTACHMENT_SIZE
+      fileSelected &&
+      fileSelected.size > constant.MAX_ATTACHMENT_SIZE
     ) {
       alert(
         `File must be smaller than ${
@@ -84,7 +83,7 @@ export default function SampleSheetChecker() {
     setIsLoading(true);
 
     const formData = new FormData();
-    formData.append("file", fileRef.current);
+    formData.append("file", fileSelected);
     formData.append("logLevel", logLevel);
     const dataRequest = {
       headers: {
@@ -102,8 +101,8 @@ export default function SampleSheetChecker() {
       .catch((error) => {
         setIsLoading(false);
         setIsError(true);
-        resetResponse();
-        resetFileRef();
+        setErrorMessage(error.toString())
+        resetFrom();
       });
   }
   function displayLog(logFile) {
@@ -195,7 +194,7 @@ export default function SampleSheetChecker() {
           </Col>
         </Row>
 
-        <Form onSubmit={handleSubmit}>
+        <Form id="samplesheet-form" onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
             <Form.Label>Logger Option</Form.Label>
             <Form.Control
@@ -217,7 +216,7 @@ export default function SampleSheetChecker() {
             <Form.Label>Upload a csv file to be checked</Form.Label>
             <Form.File
               id="custom-file"
-              label={isFileSelected ? fileRef.current.name : "File input"}
+              label={fileSelected ? fileSelected.name : "File input"}
               onChange={fileChangeHandler}
               custom
             />
@@ -229,7 +228,7 @@ export default function SampleSheetChecker() {
             variant="primary"
             type="submit"
             onClick={handleSubmit}
-            disabled={!isFileSelected}
+            disabled={!fileSelected}
             isLoading={isLoading}
             block
           >
@@ -238,7 +237,7 @@ export default function SampleSheetChecker() {
         </Row>
 
         {displayResult(validationResponse)}
-        <ShowError handleError={handleError} isError={isError} />
+        <ShowError handleError={handleError} isError={isError} errorMessage={errorMessage}/>
       </Container>
     </div>
   );
