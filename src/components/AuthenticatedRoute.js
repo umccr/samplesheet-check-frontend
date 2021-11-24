@@ -1,16 +1,26 @@
 import React from "react";
-import { Route, Redirect, useLocation } from "react-router-dom";
+import { Route } from "react-router-dom";
 import { useAppContext } from "../libs/contextLib";
+import { Auth } from "aws-amplify";
+import Nav from "react-bootstrap/Nav";
+
+import "./AuthenticatedRoute.css";
 
 export default function AuthenticatedRoute({ children, ...rest }) {
-  const { pathname, search } = useLocation();
   const { user } = useAppContext();
   return (
     <Route {...rest}>
       {user ? (
         children
       ) : (
-        <Redirect to={`/login?redirect=${pathname}${search}`} />
+        <div className="lander" textAlign->
+          <h3>UMCCR Samplesheet Check</h3>
+          <Nav.Link
+            onClick={() => Auth.federatedSignIn({ provider: "Google" })}
+          >
+            Please Login
+          </Nav.Link>
+        </div>
       )}
     </Route>
   );
