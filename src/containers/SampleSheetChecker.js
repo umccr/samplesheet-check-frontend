@@ -42,6 +42,11 @@ export default function SampleSheetChecker() {
     setIsValidated(false);
   }
 
+  function resetFileRef(){
+    fileRef.current = null
+    setIsFileSelected(false)
+  }
+  
   // Handle Log Level Changes
   function logLevelChangeHandler(event) {
     resetResponse();
@@ -97,6 +102,8 @@ export default function SampleSheetChecker() {
       .catch((error) => {
         setIsLoading(false);
         setIsError(true);
+        resetResponse();
+        resetFileRef();
       });
   }
   function displayLog(logFile) {
