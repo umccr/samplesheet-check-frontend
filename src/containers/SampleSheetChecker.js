@@ -179,6 +179,7 @@ export default function SampleSheetChecker() {
             ) : (
               <></>
             )}
+            <i>*If you want to see more logging, try changing logger option to INFO or DEBUG</i>
           </Col>
         </Row>
       );
@@ -203,6 +204,7 @@ export default function SampleSheetChecker() {
               as="select"
               label="debug option input"
               custom
+              disabled={isLoading}
             >
               {constant.DEBUG_OPTIONS.map((item, idx) => (
                 <option key={idx} value={item}>
@@ -219,6 +221,7 @@ export default function SampleSheetChecker() {
               label={fileSelected ? fileSelected.name : "File input"}
               onChange={fileChangeHandler}
               custom
+              disabled={isLoading}
             />
           </Form.Group>
         </Form>
