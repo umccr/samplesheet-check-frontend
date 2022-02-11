@@ -1,16 +1,20 @@
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import LoaderButton from "../components/LoaderButton";
-import { API } from "aws-amplify";
 import Alert from "react-bootstrap/Alert";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 
+import { QuestionCircle, ArrowRepeat } from "react-bootstrap-icons";
+
+// AWS
+import { API, Auth } from "aws-amplify";
 import "./SampleSheetChecker.css";
 
 import ShowError from "../components/Error";
+import ShowModal from "../components/Modal";
 
 const constant = {
   MAX_ATTACHMENT_SIZE: 512000000, //in bytes
@@ -29,9 +33,16 @@ export default function SampleSheetChecker() {
 
   const [logLevel, setLogLevel] = useState("ERROR");
 
+  // Show Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState({title:"",body:""});
+  function handleIsModalOpen(value){
+    setIsModalOpen(value)
+  }
+
   // State for error
   const [isError, setIsError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState("");
   function handleError(value) {
     setIsError(value);
   }
@@ -42,11 +53,11 @@ export default function SampleSheetChecker() {
     setIsValidated(false);
   }
 
-  function resetFrom(){
+  function resetFrom() {
     document.getElementById("samplesheet-form").reset();
     resetResponse();
   }
-  
+
   // Handle Log Level Changes
   function logLevelChangeHandler(event) {
     resetResponse();
@@ -63,15 +74,18 @@ export default function SampleSheetChecker() {
     }
   }
 
+  // Invoke lambda function
+  async function invokeLambdaFunction() {
+    console.log("Action Invoke to sync metadata");
+  }
+
+
   // Handle Submit Button
   async function handleSubmit(event) {
     event.preventDefault();
 
     // File Validation Size (Does not allow more than 512mb)
-    if (
-      fileSelected &&
-      fileSelected.size > constant.MAX_ATTACHMENT_SIZE
-    ) {
+    if (fileSelected && fileSelected.size > constant.MAX_ATTACHMENT_SIZE) {
       alert(
         `File must be smaller than ${
           constant.MAX_ATTACHMENT_SIZE / 1000000
@@ -101,7 +115,7 @@ export default function SampleSheetChecker() {
       .catch((error) => {
         setIsLoading(false);
         setIsError(true);
-        setErrorMessage(error.toString())
+        setErrorMessage(error.toString());
         resetFrom();
       });
   }
@@ -185,6 +199,17 @@ export default function SampleSheetChecker() {
     }
   }
 
+  function handleInfoMetadataSyncButton(){
+    const message = {
+      title: "Metadata Sync Button",
+      body:"This button will sync metadata in Google Drive into the Data Portal API. By default, the portal will sync periodically once a day. \nNOTE: sync will take up to 3 minutes."
+    }
+
+
+    setModalMessage(message)
+    setIsModalOpen(true)
+  }
+
   return (
     <div className="SampleSheet">
       <Container>
@@ -193,6 +218,22 @@ export default function SampleSheetChecker() {
             <h3>A Sample Sheet Check </h3>
           </Col>
         </Row>
+        <hr />
+        <Row className="row-metadata-sync">
+          <div className="div-metadata-sync-text">
+            <p className="p-metadata-sync">Sync Portal Metadata</p>
+            <Button variant="circle" onClick={handleInfoMetadataSyncButton}>
+              <QuestionCircle />
+            </Button>
+          </div>
+          <div>
+            <Button size="sm" variant="outline-primary" className="btn-sync">
+              <ArrowRepeat size={20} />
+            </Button>
+          </div>
+        </Row>
+
+        <hr />
 
         <Form id="samplesheet-form" onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
@@ -237,7 +278,17 @@ export default function SampleSheetChecker() {
         </Row>
 
         {displayResult(validationResponse)}
-        <ShowError handleError={handleError} isError={isError} errorMessage={errorMessage}/>
+        <ShowError
+          handleError={handleError}
+          isError={isError}
+          errorMessage={errorMessage}
+        />
+
+        <ShowModal
+        handleIsOpen={handleIsModalOpen}
+        isOpen={isModalOpen}
+        message={modalMessage}
+        />
       </Container>
     </div>
   );

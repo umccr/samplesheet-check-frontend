@@ -13,7 +13,7 @@ export default function AuthenticatedRoute({ children, ...rest }) {
       {user ? (
         children
       ) : (
-        <div className="lander" textAlign->
+        <div className="lander" >
           <h3>UMCCR Samplesheet Check</h3>
           <Nav.Link
             onClick={() => Auth.federatedSignIn({ provider: "Google" })}
