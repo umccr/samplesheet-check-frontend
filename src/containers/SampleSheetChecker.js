@@ -233,7 +233,7 @@ export default function SampleSheetChecker() {
 
     setModalMessage(
       "The metadata at Data Portal API may not be up to date with the recent data. " +
-        "Metadata sync will import metadata from Goole Drive into the Data Portal and triggered once a day automatically. " +
+        "Metadata sync will import metadata from Goole Drive into the Data Portal, and currently is being triggered once a day. " +
         "On demand, this button will sync immediately. \n" +
         "NOTE: Sync may take up to 3 minutes."
     );
