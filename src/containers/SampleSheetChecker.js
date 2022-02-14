@@ -81,20 +81,20 @@ export default function SampleSheetChecker() {
   async function setSyncLoading() {
     // Set timer 3 minutes for loading button
     setIsSyncAnimation(true);
-    await new Promise((r) => setTimeout(r, 3 * 60 * 1000)); // Set for 3 minutes
+    await new Promise((r) => setTimeout(r, 2.5 * 60 * 1000)); // Set for 2.5 minutes
     setIsSyncAnimation(false);
   }
 
   // Handle sync api
   async function handleSyncMetadataButton() {
-    setSyncLoading();
-
     API.post("metadata-sync-api", "/metadata/sync", {})
       .then((response) => {
+        // Disable and show sync animation
+        setSyncLoading();
+
         // Show modal of success invocation.
         const message =
           "This may take some times and could take up to 3 minutes. Please wait for a moment before checking the samplesheet again.";
-
         setModatTitle(
           <Modal.Title>
             Sync Metadata Triggered <SendCheck />
@@ -262,6 +262,7 @@ export default function SampleSheetChecker() {
               size="sm"
               variant="outline-primary"
               className="btn-sync"
+              disabled={isSyncAnimation}
               onClick={handleSyncMetadataButton}
             >
               <ArrowRepeat
