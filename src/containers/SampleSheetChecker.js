@@ -7,14 +7,15 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 
-import { QuestionCircle, ArrowRepeat } from "react-bootstrap-icons";
+import { QuestionCircle, ArrowRepeat, SendCheck } from "react-bootstrap-icons";
 
 // AWS
-import { API, Auth } from "aws-amplify";
+import { API } from "aws-amplify";
 import "./SampleSheetChecker.css";
 
 import ShowError from "../components/Error";
 import ShowModal from "../components/Modal";
+import { Modal } from "react-bootstrap";
 
 const constant = {
   MAX_ATTACHMENT_SIZE: 512000000, //in bytes
@@ -35,10 +36,13 @@ export default function SampleSheetChecker() {
 
   // Show Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState({title:"",body:""});
-  function handleIsModalOpen(value){
-    setIsModalOpen(value)
+  const [modalTitle, setModatTitle] = useState(<Modal.Title></Modal.Title>);
+  const [modalMessage, setModalMessage] = useState("");
+  function handleIsModalOpen(value) {
+    setIsModalOpen(value);
   }
+
+  const [isSyncAnimation, setIsSyncAnimation] = useState(false);
 
   // State for error
   const [isError, setIsError] = useState(false);
@@ -74,11 +78,36 @@ export default function SampleSheetChecker() {
     }
   }
 
-  // Invoke lambda function
-  async function invokeLambdaFunction() {
-    console.log("Action Invoke to sync metadata");
+  async function setSyncLoading() {
+    // Set timer 3 minutes for loading button
+    setIsSyncAnimation(true);
+    await new Promise((r) => setTimeout(r, 3 * 60 * 1000)); // Set for 3 minutes
+    setIsSyncAnimation(false);
   }
 
+  // Handle sync api
+  async function handleSyncMetadataButton() {
+    setSyncLoading();
+
+    API.post("metadata-sync-api", "/metadata/sync", {})
+      .then((response) => {
+        // Show modal of success invocation.
+        const message =
+          "This may take some times and could take up to 3 minutes. Please wait for a moment before checking the samplesheet again.";
+
+        setModatTitle(
+          <Modal.Title>
+            Sync Metadata Triggered <SendCheck />
+          </Modal.Title>
+        );
+        setModalMessage(message);
+        setIsModalOpen(true);
+      })
+      .catch((error) => {
+        setIsError(true);
+        setErrorMessage(error.toString());
+      });
+  }
 
   // Handle Submit Button
   async function handleSubmit(event) {
@@ -106,7 +135,7 @@ export default function SampleSheetChecker() {
       body: formData,
     };
 
-    API.post("spreadsheet-check", "/", dataRequest)
+    API.post("samplesheet-check", "/", dataRequest)
       .then((response) => {
         setValidationResponse(response);
         setIsValidated(true);
@@ -199,15 +228,17 @@ export default function SampleSheetChecker() {
     }
   }
 
-  function handleInfoMetadataSyncButton(){
-    const message = {
-      title: "Metadata Sync Button",
-      body:"This button will sync metadata in Google Drive into the Data Portal API. By default, the portal will sync periodically once a day. \nNOTE: sync will take up to 3 minutes."
-    }
+  function handleInfoMetadataSyncButton() {
+    setModatTitle(<Modal.Title>Sync Metadata Button</Modal.Title>);
 
+    setModalMessage(
+      "The metadata at Data Portal API may not be up to date with the recent data. " +
+        "Metadata sync will import metadata from Goole Drive into the Data Portal and triggered once a day automatically. " +
+        "On demand, this button will sync immediately. \n" +
+        "NOTE: Sync may take up to 3 minutes."
+    );
 
-    setModalMessage(message)
-    setIsModalOpen(true)
+    setIsModalOpen(true);
   }
 
   return (
@@ -227,8 +258,16 @@ export default function SampleSheetChecker() {
             </Button>
           </div>
           <div>
-            <Button size="sm" variant="outline-primary" className="btn-sync">
-              <ArrowRepeat size={20} />
+            <Button
+              size="sm"
+              variant="outline-primary"
+              className="btn-sync"
+              onClick={handleSyncMetadataButton}
+            >
+              <ArrowRepeat
+                size={20}
+                className={isSyncAnimation ? "spinning" : ""}
+              />
             </Button>
           </div>
         </Row>
@@ -285,9 +324,10 @@ export default function SampleSheetChecker() {
         />
 
         <ShowModal
-        handleIsOpen={handleIsModalOpen}
-        isOpen={isModalOpen}
-        message={modalMessage}
+          handleIsOpen={handleIsModalOpen}
+          isOpen={isModalOpen}
+          title={modalTitle}
+          message={modalMessage}
         />
       </Container>
     </div>

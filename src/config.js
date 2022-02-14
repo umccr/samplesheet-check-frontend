@@ -21,6 +21,10 @@ const config = {
       responseType: "code",
     },
   },
+  dataPortalAPI: {
+    REGION: REGION,
+    API:`https://${process.env.REACT_APP_DATA_PORTAL_API_DOMAIN}`
+  }
 };
 
 export default config;

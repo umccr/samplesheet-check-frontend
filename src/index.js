@@ -17,9 +17,19 @@ Amplify.configure({
   API: {
     endpoints: [
       {
-        name: "spreadsheet-check",
+        name: "samplesheet-check",
         endpoint: config.apiGateway.URL,
         region: config.apiGateway.REGION,
+        custom_header: async () => {
+          return {
+            Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`,
+          };
+        },
+      },
+      {
+        name: "metadata-sync-api",
+        endpoint: config.dataPortalAPI.API,
+        region: config.dataPortalAPI.REGION,
         custom_header: async () => {
           return {
             Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`,

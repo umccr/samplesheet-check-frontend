@@ -51,7 +51,18 @@
   border-color: none;
   margin-left: 0.2rem;
 }
+.spinning {
+  animation: spin 1s infinite linear;
+}
 
+@keyframes spin {
+  from {
+    transform: scale(1) rotate(0deg);
+  }
+  to {
+    transform: scale(1) rotate(360deg);
+  }
+}
 .btn-sync {
   float: right;
   font-size: 12px;
