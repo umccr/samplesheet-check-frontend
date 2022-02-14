@@ -57,7 +57,7 @@ class PipelineStack(cdk.Stack):
             block_public_access= s3.BlockPublicAccess.BLOCK_ALL
         )
 
-        # Create a pipeline for status page
+        # Create a pipeline for the sscheck
         sscheck_front_end_pipeline = codepipeline.Pipeline(
             self,
             "SSCheckFrontEndPipeline",
@@ -197,6 +197,10 @@ class PipelineStack(cdk.Stack):
                     ),
                     "REACT_APP_OAUTH_REDIRECT_OUT": codebuild.BuildEnvironmentVariable(
                         value="/sscheck/client/oauth_redirect_out_stage",
+                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
+                    ),
+                    "REACT_APP_DATA_PORTAL_API_DOMAIN": codebuild.BuildEnvironmentVariable(
+                        value="/data_portal/backend/api_domain_name",
                         type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
                     ),
             },
