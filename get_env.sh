@@ -47,6 +47,7 @@ if [ -n "$1" ] && [ "$1" = "unset" ]; then
   unset REACT_APP_OAUTH_DOMAIN
   unset REACT_APP_OAUTH_REDIRECT_IN
   unset REACT_APP_OAUTH_REDIRECT_OUT
+  unset REACT_APP_DATA_PORTAL_API
   echo "UNSET REACT ENV VAR"
   return 0
 fi
@@ -66,7 +67,8 @@ oauth_redirect_out=$(aws ssm get-parameter --name '/data_portal/client/oauth_red
 
 lambda_api_domain=$(aws ssm get-parameter --name '/sscheck/lambda-api-domain' | jq -r .Parameter.Value)
 bucket_name=$(aws ssm get-parameter --name '/sscheck/bucket_name' | jq -r .Parameter.Value)
-stage=$(aws ssm get-parameter --name '/sscheck/stage' | jq -r .Parameter.Value)
+
+data_portal_api_domain=$(aws ssm get-parameter --name '/data_portal/backend/api_domain_name' | jq -r .Parameter.Value)
 
 export REACT_APP_BUCKET_NAME=$bucket_name
 export REACT_APP_LAMBDA_API_DOMAIN=$lambda_api_domain
@@ -78,4 +80,6 @@ export REACT_APP_COG_APP_CLIENT_ID=$cog_app_client_id
 export REACT_APP_OAUTH_DOMAIN=$oauth_domain
 export REACT_APP_OAUTH_REDIRECT_IN=$oauth_redirect_in
 export REACT_APP_OAUTH_REDIRECT_OUT=$oauth_redirect_out
+
+export REACT_APP_DATA_PORTAL_API_DOMAIN=$data_portal_api_domain
 env | grep REACT
