@@ -13,6 +13,7 @@ from aws_cdk import (
 )
 from stacks.sscheck_front_end_stack import SampleSheetCheckFrontEndStack
 
+
 class SampleSheetCheckFrontEndStage(cdk.Stage):
     def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -30,6 +31,7 @@ class SampleSheetCheckFrontEndStage(cdk.Stage):
             }
         )
 
+
 # Class for the CDK pipeline stack
 
 
@@ -43,18 +45,20 @@ class PipelineStack(cdk.Stack):
         props = self.node.try_get_context("props")
 
         # Load SSM parameter for GitHub repo (Created via Console)
-        codestar_arn = ssm.StringParameter.from_string_parameter_attributes(self, "codestarArn",
+        codestar_arn = ssm.StringParameter.from_string_parameter_attributes(
+            self,
+            "codestarArn",
             parameter_name="codestar_github_arn"
         ).string_value
 
         # Create S3 bucket for artifacts
         pipeline_artifact_bucket = s3.Bucket(
-            self, 
-            "sscheck-front-end-artifact-bucket", 
-            bucket_name = props["pipeline_artifact_bucket_name"][app_stage],
-            auto_delete_objects = True,
-            removal_policy = cdk.RemovalPolicy.DESTROY,
-            block_public_access= s3.BlockPublicAccess.BLOCK_ALL
+            self,
+            "sscheck-front-end-artifact-bucket",
+            bucket_name=props["pipeline_artifact_bucket_name"][app_stage],
+            auto_delete_objects=True,
+            removal_policy=cdk.RemovalPolicy.DESTROY,
+            block_public_access=s3.BlockPublicAccess.BLOCK_ALL
         )
 
         # Create a pipeline for the sscheck
@@ -76,8 +80,8 @@ class PipelineStack(cdk.Stack):
         )
 
         # Grab code_pipeline_source artifact
-        ArtifactMap = pipelines.ArtifactMap()
-        source_artifact = ArtifactMap.to_code_pipeline(
+        artifactMap = pipelines.ArtifactMap()
+        source_artifact = artifactMap.to_code_pipeline(
             x=code_pipeline_source.primary_output
         )
 
@@ -121,8 +125,7 @@ class PipelineStack(cdk.Stack):
 
         self_mutate_pipeline.build_pipeline()
 
-
-        # Create CodeBuild Project 
+        # Create CodeBuild Project
         react_codebuild_project = codebuild.PipelineProject(
             self,
             "ProjectReactBuild",
@@ -156,7 +159,7 @@ class PipelineStack(cdk.Stack):
                 effect=iam.Effect.ALLOW,
                 resources=[
                     front_end_bucket_arn,
-                    front_end_bucket_arn+"/*"
+                    front_end_bucket_arn + "/*"
                 ]
             )
         )
@@ -174,35 +177,35 @@ class PipelineStack(cdk.Stack):
                 "REACT_APP_BUCKET_NAME": codebuild.BuildEnvironmentVariable(
                     value=props["client_bucket_name"][app_stage],
                     type=codebuild.BuildEnvironmentVariableType.PLAINTEXT
-                    ),
-                    "REACT_APP_LAMBDA_API_DOMAIN": codebuild.BuildEnvironmentVariable(
-                        value="/sscheck/lambda-api-domain",
-                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
-                    ),
-                    "REACT_APP_COG_USER_POOL_ID": codebuild.BuildEnvironmentVariable(
-                        value="/data_portal/client/cog_user_pool_id",
-                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
-                    ),
-                    "REACT_APP_COG_APP_CLIENT_ID": codebuild.BuildEnvironmentVariable(
-                        value="/sscheck/client/cog_app_client_id_stage",
-                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
-                    ),
-                    "REACT_APP_OAUTH_DOMAIN": codebuild.BuildEnvironmentVariable(
-                        value="/data_portal/client/oauth_domain",
-                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
-                    ),
-                    "REACT_APP_OAUTH_REDIRECT_IN": codebuild.BuildEnvironmentVariable(
-                        value="/sscheck/client/oauth_redirect_in_stage",
-                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
-                    ),
-                    "REACT_APP_OAUTH_REDIRECT_OUT": codebuild.BuildEnvironmentVariable(
-                        value="/sscheck/client/oauth_redirect_out_stage",
-                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
-                    ),
-                    "REACT_APP_DATA_PORTAL_API_DOMAIN": codebuild.BuildEnvironmentVariable(
-                        value="/data_portal/backend/api_domain_name",
-                        type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
-                    ),
+                ),
+                "REACT_APP_LAMBDA_API_DOMAIN": codebuild.BuildEnvironmentVariable(
+                    value="/sscheck/lambda-api-domain",
+                    type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
+                ),
+                "REACT_APP_COG_USER_POOL_ID": codebuild.BuildEnvironmentVariable(
+                    value="/data_portal/client/cog_user_pool_id",
+                    type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
+                ),
+                "REACT_APP_COG_APP_CLIENT_ID": codebuild.BuildEnvironmentVariable(
+                    value="/sscheck/client/cog_app_client_id_stage",
+                    type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
+                ),
+                "REACT_APP_OAUTH_DOMAIN": codebuild.BuildEnvironmentVariable(
+                    value="/data_portal/client/oauth_domain",
+                    type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
+                ),
+                "REACT_APP_OAUTH_REDIRECT_IN": codebuild.BuildEnvironmentVariable(
+                    value="/sscheck/client/oauth_redirect_in_stage",
+                    type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
+                ),
+                "REACT_APP_OAUTH_REDIRECT_OUT": codebuild.BuildEnvironmentVariable(
+                    value="/sscheck/client/oauth_redirect_out_stage",
+                    type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
+                ),
+                "REACT_APP_DATA_PORTAL_API_DOMAIN": codebuild.BuildEnvironmentVariable(
+                    value="/data_portal/backend/api_domain_name",
+                    type=codebuild.BuildEnvironmentVariableType.PARAMETER_STORE
+                ),
             },
             type=codepipeline_actions.CodeBuildActionType.BUILD,
             action_name="ReactBuildAction"
@@ -230,7 +233,7 @@ class PipelineStack(cdk.Stack):
             topic_arn=data_portal_notification_sns_arn
         )
 
-        # Add Chatbot Notificaiton
+        # Add Chatbot Notification
         self_mutate_pipeline.pipeline.notify_on(
             "SlackNotificationStatusPage",
             target=data_portal_sns_notification,
