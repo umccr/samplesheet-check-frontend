@@ -130,9 +130,13 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
         codebuild_build_image = codebuild.Project(
             self,
             "CodebuildProjectInvalidateCDNCache",
-            source=codebuild.Source.s3(
-                bucket=samplesheet_client_bucket,
-                path="index.html"
+            source=codebuild.Source.git_hub(
+                owner="umccr",
+                repo="samplesheet-check-frontend",
+                webhook=True,
+                webhook_filters=[
+                    codebuild.FilterGroup.in_event_of(codebuild.EventAction.PUSH).and_branch_is(props["branch_source"][app_stage])
+                ]
             ),
             project_name="InvalidateSSCheckCDNCache",
             environment=codebuild.BuildEnvironment(

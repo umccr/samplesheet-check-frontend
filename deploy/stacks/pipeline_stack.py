@@ -233,7 +233,7 @@ class PipelineStack(cdk.Stack):
             topic_arn=data_portal_notification_sns_arn
         )
 
-        # Add Chatbot Notificaiton
+        # Add Chatbot Notification
         self_mutate_pipeline.pipeline.notify_on(
             "SlackNotificationStatusPage",
             target=data_portal_sns_notification,
