@@ -126,43 +126,9 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             record_name="sscheck"
         )
 
-        # Adding codebuild for invalidate CDN cache for every s3 deployment
-        codebuild_build_image = codebuild.Project(
+        # Cloudformation Distribution_id
+        cdk.CfnOutput(
             self,
-            "CodebuildProjectInvalidateCDNCache",
-            source=codebuild.Source.git_hub(
-                owner="umccr",
-                repo="samplesheet-check-frontend",
-                webhook=True,
-                webhook_filters=[
-                    codebuild.FilterGroup.in_event_of(codebuild.EventAction.PUSH).and_branch_is(props["branch_source"][app_stage])
-                ]
-            ),
-            project_name="InvalidateSSCheckCDNCache",
-            environment=codebuild.BuildEnvironment(
-                build_image=codebuild.LinuxBuildImage.STANDARD_5_0
-            ),
-            build_spec=codebuild.BuildSpec.from_object({
-                "version": "0.2",
-                "phases": {
-                    "build": {
-                        "commands": [
-                            """aws cloudfront create-invalidation --distribution-id ${DISTRIBUTION_ID} --paths "/*" """
-                        ]
-                    }
-                }
-            }),
-            environment_variables={
-                "DISTRIBUTION_ID": codebuild.BuildEnvironmentVariable(
-                    value=sscheck_cloudfront.distribution_id)
-            }
-        )
-
-        codebuild_build_image.add_to_role_policy(
-            iam.PolicyStatement(
-                resources=[
-                    f"arn:aws:cloudfront::{os.environ.get('CDK_DEFAULT_ACCOUNT')}:distribution/{sscheck_cloudfront.distribution_id}"
-                ],
-                actions=["cloudfront:CreateInvalidation"]
-            )
+            'CfnOutputCloudFrontDistributionId',
+            value=sscheck_cloudfront.distribution_id
         )

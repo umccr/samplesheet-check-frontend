@@ -1,4 +1,5 @@
 # importing modules
+import os
 from aws_cdk import (
     aws_ssm as ssm,
     pipelines,
@@ -19,15 +20,18 @@ class SampleSheetCheckFrontEndStage(cdk.Stage):
         super().__init__(scope, construct_id, **kwargs)
 
         app_stage = self.node.try_get_context("app_stage")
+        props = self.node.try_get_context("props")
+
+        stack_name = props['app_stack_name']
 
         # Create stack defined on stacks folder
         SampleSheetCheckFrontEndStack(
             self,
             "SampleSheetCheckFrontEnd",
-            stack_name="sscheck-front-end-stack",
+            stack_name=stack_name,
             tags={
                 "stage": app_stage,
-                "stack": "sscheck-front-end-stack"
+                "stack": stack_name
             }
         )
 
@@ -219,6 +223,70 @@ class PipelineStack(cdk.Stack):
             ]
         )
 
+        codebuild_build_invalidate_project = codebuild.PipelineProject(
+            self,
+            "CodebuildProjectInvalidateSSCheckCDNCache",
+            project_name="InvalidateSSCheckCDNCache",
+            check_secrets_in_plain_text_env_variables=False,
+            environment=codebuild.BuildEnvironment(
+                build_image=codebuild.LinuxBuildImage.STANDARD_5_0
+            ),
+            build_spec=codebuild.BuildSpec.from_object({
+                "version": "0.2",
+                "phases": {
+                    "build": {
+                        "commands": [
+                            # Find distribution ID from stack name
+                            f"""DISTRIBUTION_ID=$(aws cloudformation describe-stacks """
+                            f"""--stack-name {props['app_stack_name']} """
+                            f"""--query 'Stacks[0].Outputs[?OutputKey==`CfnOutputCloudFrontDistributionId`].OutputValue' """
+                            f"""--output text)""",
+
+                            """aws cloudfront create-invalidation --distribution-id ${DISTRIBUTION_ID} --paths "/*" """
+                        ]
+                    }
+                }
+            }),
+            timeout=cdk.Duration.minutes(5),
+            queued_timeout=cdk.Duration.minutes(5)
+        )
+
+        # Add invalidate CDN role
+        codebuild_build_invalidate_project.add_to_role_policy(
+            iam.PolicyStatement(
+                resources=[
+                    f"arn:aws:cloudfront::{os.environ.get('CDK_DEFAULT_ACCOUNT')}:distribution/*"
+                ],
+                actions=["cloudfront:CreateInvalidation"]
+            )
+        )
+        # Add describe stack role
+        codebuild_build_invalidate_project.add_to_role_policy(
+            iam.PolicyStatement(
+                resources=[
+                    f"arn:aws:cloudformation:ap-southeast-2:{os.environ.get('CDK_DEFAULT_ACCOUNT')}:"
+                    f"stack/{props['app_stack_name']}/*"
+                ],
+                actions=["cloudformation:DescribeStacks"]
+            )
+        )
+
+        # Reset Cache
+        codebuild_action_clear_cache = codepipeline_actions.CodeBuildAction(
+            action_name="InvalidateSSCheckCloudFrontCache",
+            project=codebuild_build_invalidate_project,
+            check_secrets_in_plain_text_env_variables=False,
+            input=source_artifact
+        )
+
+        # Invalidate CDN cache
+        self_mutate_pipeline.pipeline.add_stage(
+            stage_name="CleanUpStage",
+            actions=[
+                codebuild_action_clear_cache
+            ]
+        )
+
         # SSM parameter for AWS SNS ARN
         data_portal_notification_sns_arn = ssm.StringParameter.from_string_parameter_attributes(
             self,
@@ -235,7 +303,7 @@ class PipelineStack(cdk.Stack):
 
         # Add Chatbot Notification
         self_mutate_pipeline.pipeline.notify_on(
-            "SlackNotificationStatusPage",
+            "SlackNotificationSSCheckFrontEnd",
             target=data_portal_sns_notification,
             events=[
                 codepipeline.PipelineNotificationEvents.PIPELINE_EXECUTION_FAILED,
@@ -243,5 +311,5 @@ class PipelineStack(cdk.Stack):
             ],
             detail_type=codestarnotifications.DetailType.BASIC,
             enabled=True,
-            notification_rule_name="NotificationStatusPagePipeline"
+            notification_rule_name="NotificationSSCheckFrontEndPipeline"
         )
