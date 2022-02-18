@@ -18,6 +18,7 @@ else:
 
 
 props = {
+    "app_stack_name": "sscheck-front-end-stack",
     "pipeline_name": {
         "dev": "sscheck-frontend",
         "prod": "sscheck-frontend"
