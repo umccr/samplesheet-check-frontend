@@ -1,7 +1,6 @@
 # UMCCR client CDK for Samplesheet Check
 
-This cdk will build an AWS cloud infrastructure for the UMCCR samplesheet check. 
-
+This cdk will build an AWS cloud infrastructure for the UMCCR samplesheet check.
 
 The directories:
 - *cdkpipeline* - Contain the stack for the pipeline.
@@ -17,10 +16,9 @@ The directories:
     Setup DNS for the samplesheet check for cloudfront
 
 # Setting up
+It is recommended to create a virtual environment for the app.
 
-It is recomended to create a virtual environment for the app.
-
-To do so please follow the instruction below.
+To do so please follow the instructions below.
 
 Change your directory to the root of this readme file.
 ```
@@ -28,7 +26,7 @@ $ cd deploy
 ```
 Create a virtual environment for the app.
 ```
-$ python3 -m venv .venv
+$ virtualenv .venv --python=python3.11
 ```
 
 After the init process completes and the virtualenv is created, you can use the following
@@ -38,11 +36,6 @@ step to activate your virtualenv.
 $ source .venv/bin/activate
 ```
 
-If you are a Windows platform, you might try this:
-
-```
-% .venv\Scripts\activate.bat
-```
 Once the virtualenv is activated, you can install the required dependencies.
 
 ```

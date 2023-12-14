@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 
-from aws_cdk import core as cdk
+from aws_cdk import App
 
 # Import cdk pipeline stack
 from stacks.pipeline_stack import PipelineStack
@@ -42,7 +42,7 @@ props = {
     }
 }
 
-app = cdk.App(
+app = App(
     context={
         "app_stage": app_stage,
         "props": props
