@@ -1,6 +1,9 @@
 import os
+from constructs import Construct
 from aws_cdk import (
-    core as cdk,
+    Stack,
+    RemovalPolicy,
+    CfnOutput,
     aws_s3 as s3,
     aws_cloudfront as cloudfront,
     aws_ssm as ssm,
@@ -12,9 +15,9 @@ from aws_cdk import (
 )
 
 
-class SampleSheetCheckFrontEndStack(cdk.Stack):
+class SampleSheetCheckFrontEndStack(Stack):
 
-    def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         # Defining app constants
@@ -64,7 +67,7 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
             "umccr-samplesheet-script",
             bucket_name=bucket_name,
             auto_delete_objects=True,
-            removal_policy=cdk.RemovalPolicy.DESTROY,
+            removal_policy=RemovalPolicy.DESTROY,
             website_index_document="index.html",
             website_error_document="index.html",
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL
@@ -127,7 +130,7 @@ class SampleSheetCheckFrontEndStack(cdk.Stack):
         )
 
         # Cloudformation Distribution_id
-        cdk.CfnOutput(
+        CfnOutput(
             self,
             'CfnOutputCloudFrontDistributionId',
             value=sscheck_cloudfront.distribution_id

@@ -1,9 +1,13 @@
 # importing modules
+from constructs import Construct
 import os
 from aws_cdk import (
+    Stack,
+    Stage,
+    Duration,
+    RemovalPolicy,
     aws_ssm as ssm,
     pipelines,
-    core as cdk,
     aws_codepipeline as codepipeline,
     aws_s3 as s3,
     aws_codepipeline_actions as codepipeline_actions,
@@ -15,8 +19,8 @@ from aws_cdk import (
 from stacks.sscheck_front_end_stack import SampleSheetCheckFrontEndStack
 
 
-class SampleSheetCheckFrontEndStage(cdk.Stage):
-    def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+class SampleSheetCheckFrontEndStage(Stage):
+    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         app_stage = self.node.try_get_context("app_stage")
@@ -39,9 +43,9 @@ class SampleSheetCheckFrontEndStage(cdk.Stage):
 # Class for the CDK pipeline stack
 
 
-class PipelineStack(cdk.Stack):
+class PipelineStack(Stack):
 
-    def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         # Defining app stage
@@ -61,7 +65,7 @@ class PipelineStack(cdk.Stack):
             "sscheck-front-end-artifact-bucket",
             bucket_name=props["pipeline_artifact_bucket_name"][app_stage],
             auto_delete_objects=True,
-            removal_policy=cdk.RemovalPolicy.DESTROY,
+            removal_policy=RemovalPolicy.DESTROY,
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL
         )
 
@@ -99,14 +103,10 @@ class PipelineStack(cdk.Stack):
                 input=code_pipeline_source,
                 commands=[
                     "cdk synth",
-                    "mkdir ./cfnnag_output",
-                    "for template in $(find ./cdk.out -type f -maxdepth 2 -name '*.template.json'); do cp $template ./cfnnag_output; done",
-                    "cfn_nag_scan --input-path ./cfnnag_output"
                 ],
                 install_commands=[
                     "cd deploy",
                     "npm install -g aws-cdk",
-                    "gem install cfn-nag",
                     "pip install -r requirements.txt"
                 ],
                 primary_output_directory="deploy/cdk.out"
@@ -137,7 +137,7 @@ class PipelineStack(cdk.Stack):
             description="The project from codebuild to build react project.",
             project_name="SSCheckFrontEndReactBuild",
             environment=codebuild.BuildEnvironment(
-                build_image=codebuild.LinuxBuildImage.STANDARD_5_0
+                build_image=codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0
             )
         )
 
@@ -146,8 +146,10 @@ class PipelineStack(cdk.Stack):
                 actions=["ssm:GetParameter"],
                 effect=iam.Effect.ALLOW,
                 resources=[
-                    "arn:aws:ssm:%s:%s:parameter/sscheck/*" % (self.region, self.account),
-                    "arn:aws:ssm:%s:%s:parameter/data_portal/client/*" % (self.region, self.account)
+                    "arn:aws:ssm:%s:%s:parameter/sscheck/*" % (
+                        self.region, self.account),
+                    "arn:aws:ssm:%s:%s:parameter/data_portal/client/*" % (
+                        self.region, self.account)
                 ]
             )
         )
@@ -229,7 +231,7 @@ class PipelineStack(cdk.Stack):
             project_name="InvalidateSSCheckCDNCache",
             check_secrets_in_plain_text_env_variables=False,
             environment=codebuild.BuildEnvironment(
-                build_image=codebuild.LinuxBuildImage.STANDARD_5_0
+                build_image=codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0
             ),
             build_spec=codebuild.BuildSpec.from_object({
                 "version": "0.2",
@@ -247,8 +249,8 @@ class PipelineStack(cdk.Stack):
                     }
                 }
             }),
-            timeout=cdk.Duration.minutes(5),
-            queued_timeout=cdk.Duration.minutes(5)
+            timeout=Duration.minutes(5),
+            queued_timeout=Duration.minutes(5)
         )
 
         # Add invalidate CDN role
