@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
-import Routes from "./Routes";
+import AppRoutes from "./Routes";
 import { AppContext } from "./libs/contextLib";
 import { Auth, Hub } from "aws-amplify";
-import { LinkContainer } from "react-router-bootstrap";
+import { Link } from "react-router-dom";
 
 function App() {
   const [isAuthenticating, setIsAuthenticating] = useState(true);
@@ -61,11 +61,11 @@ function App() {
     !isAuthenticating && (
       <div className="App container py-3">
         <Navbar collapseOnSelect bg="light" expand="md" className="mb-3">
-          <LinkContainer to="/">
+          <Link to="/">
             <Navbar.Brand className="font-weight-bold text-muted">
               UMCCR
             </Navbar.Brand>
-          </LinkContainer>
+          </Link>
           <Navbar.Toggle />
           <Navbar.Collapse className="justify-content-end">
             {user ? (
@@ -81,7 +81,7 @@ function App() {
         </Navbar>
 
         <AppContext.Provider value={{ user }}>
-          <Routes />
+          <AppRoutes />
         </AppContext.Provider>
       </div>
     )

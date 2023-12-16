@@ -1,6 +1,6 @@
 # samplesheet-check-frontend
 
-This is the front end code for UMCCR samplesheet check.
+This is the frontend code for UMCCR samplesheet check.
 
 The directories:
 - *deploy* - It will contain the AWS cdk cloud infrastructrure. 

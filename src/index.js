@@ -1,8 +1,8 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { Amplify, Auth } from "aws-amplify";
 import config from "./config";
 
@@ -22,7 +22,9 @@ Amplify.configure({
         region: config.apiGateway.REGION,
         custom_header: async () => {
           return {
-            Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`,
+            Authorization: `Bearer ${(await Auth.currentSession())
+              .getIdToken()
+              .getJwtToken()}`,
           };
         },
       },
@@ -32,7 +34,9 @@ Amplify.configure({
         region: config.dataPortalAPI.REGION,
         custom_header: async () => {
           return {
-            Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`,
+            Authorization: `Bearer ${(await Auth.currentSession())
+              .getIdToken()
+              .getJwtToken()}`,
           };
         },
       },
@@ -40,11 +44,12 @@ Amplify.configure({
   },
 });
 
-ReactDOM.render(
+const container = document.getElementById("root");
+const root = createRoot(container);
+root.render(
   <React.StrictMode>
-    <Router>
+    <BrowserRouter>
       <App />
-    </Router>
+    </BrowserRouter>
   </React.StrictMode>,
-  document.getElementById("root")
 );

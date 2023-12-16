@@ -1,7 +1,7 @@
 import React from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 import { useAppContext } from "../libs/contextLib";
-import { LinkContainer } from "react-router-bootstrap";
+import { Link } from "react-router-dom";
 import { Auth } from "aws-amplify";
 import Nav from "react-bootstrap/Nav";
 import "./Home.css";
@@ -22,11 +22,11 @@ export default function Home() {
   function renderScripts() {
     return (
       <div>
-        <LinkContainer to="/sample-sheet-checker">
+        <Link to="/sample-sheet-checker">
           <ListGroup.Item action>
             <span className="font-weight-bold">Sample Sheet Checker</span>
           </ListGroup.Item>
-        </LinkContainer>
+        </Link>
       </div>
     );
   }
