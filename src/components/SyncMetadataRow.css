@@ -1,0 +1,17 @@
+.row-metadata-sync {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.p-metadata-sync {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.div-metadata-sync-text {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+}

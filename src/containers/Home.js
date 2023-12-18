@@ -1,7 +1,6 @@
 import React from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 import { useAppContext } from "../libs/contextLib";
-import { Link } from "react-router-dom";
 import { Auth } from "aws-amplify";
 import Nav from "react-bootstrap/Nav";
 import "./Home.css";
@@ -22,11 +21,9 @@ export default function Home() {
   function renderScripts() {
     return (
       <div>
-        <Link to="/sample-sheet-checker">
-          <ListGroup.Item action>
-            <span className="font-weight-bold">Sample Sheet Checker</span>
-          </ListGroup.Item>
-        </Link>
+        <ListGroup.Item href="/sample-sheet-checker" action>
+          <span className="fw-bold">Sample Sheet Checker</span>
+        </ListGroup.Item>
       </div>
     );
   }

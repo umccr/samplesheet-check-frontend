@@ -4,7 +4,6 @@ import Nav from "react-bootstrap/Nav";
 import AppRoutes from "./Routes";
 import { AppContext } from "./libs/contextLib";
 import { Auth, Hub } from "aws-amplify";
-import { Link } from "react-router-dom";
 
 function App() {
   const [isAuthenticating, setIsAuthenticating] = useState(true);
@@ -34,7 +33,7 @@ function App() {
   function getUser() {
     return Auth.currentAuthenticatedUser()
       .then((userData) => userData)
-      .catch(() => console.log("Not signed in"));
+      .catch(() => console.debug("Not signed in"));
   }
 
   async function handleLogout() {
@@ -60,12 +59,15 @@ function App() {
   return (
     !isAuthenticating && (
       <div className="App container py-3">
-        <Navbar collapseOnSelect bg="light" expand="md" className="mb-3">
-          <Link to="/">
-            <Navbar.Brand className="font-weight-bold text-muted">
-              UMCCR
-            </Navbar.Brand>
-          </Link>
+        <Navbar
+          collapseOnSelect
+          bg="light"
+          expand="md"
+          className="bg-body-tertiary mb-3 py-2 px-3"
+        >
+          <Navbar.Brand href="/" className="fw-bold text-muted">
+            UMCCR
+          </Navbar.Brand>
           <Navbar.Toggle />
           <Navbar.Collapse className="justify-content-end">
             {user ? (
