@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import { QuestionCircle, ArrowRepeat, SendCheck } from "react-bootstrap-icons";
-import { API } from "aws-amplify";
+import { post as amplifyPost } from "aws-amplify/api";
 import ShowModal from "./Modal";
 import ShowError from "./Error";
 import "./SyncMetadataRow.css";
@@ -29,27 +29,31 @@ export default function SyncMetadataRow() {
   async function handleSyncMetadataButton() {
     setSyncLoading();
 
-    API.post("metadata-sync-api", "/metadata/sync", {})
-      .then((response) => {
-        // Show modal of success invocation.
-        const message =
-          "This may take some times and could take up to 3 minutes. Please wait for a moment before checking the samplesheet again.";
+    try {
+      const _res = await amplifyPost({
+        apiName: "metadataSync",
+        path: "/metadata/sync",
+      }).response;
+      console.debug("sync response: ", _res);
 
-        setModalProps((p) => ({
-          ...p,
-          title: "Sync Metadata Triggered",
-          titleIcon: <SendCheck />,
-          message: message,
-        }));
-      })
-      .catch((error) => {
-        setIsSyncAnimation(false);
-        setErrorString(error.toString());
-      });
+      const message =
+        "This may take some times and could take up to 3 minutes. Please wait for a moment before checking the samplesheet again.";
+
+      setModalProps((p) => ({
+        ...p,
+        title: "Sync Metadata Triggered",
+        titleIcon: <SendCheck />,
+        message: message,
+      }));
+    } catch (error) {
+      setIsSyncAnimation(false);
+      setErrorString(error.toString());
+    }
   }
 
   function handleInfoMetadataSyncButton() {
-    setModalProps({
+    setModalProps((p) => ({
+      ...p,
       isOpen: true,
       title: "Sync Metadata Button",
       message:
@@ -57,7 +61,7 @@ export default function SyncMetadataRow() {
         "Metadata sync will import metadata from Goole Drive into the Data Portal, and currently is being triggered once a day. " +
         "On demand, this button will sync immediately. \n" +
         "NOTE: Sync may take up to 3 minutes.",
-    });
+    }));
   }
 
   return (

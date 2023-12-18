@@ -9,7 +9,7 @@ import Button from "react-bootstrap/Button";
 import { download } from "../utils";
 
 // AWS
-import { API } from "aws-amplify";
+import { post as amplifyPost } from "aws-amplify/api";
 import "./SampleSheetChecker.css";
 import SyncMetadataRow from "../components/SyncMetadataRow";
 
@@ -85,6 +85,7 @@ export default function SampleSheetChecker() {
     const formData = new FormData();
     formData.append("file", fileSelected);
     formData.append("logLevel", logLevel);
+
     const dataRequest = {
       headers: {
         "content-type": "multipart/form-data",
@@ -92,18 +93,22 @@ export default function SampleSheetChecker() {
       body: formData,
     };
 
-    API.post("samplesheet-check", "/", dataRequest)
-      .then((response) => {
-        setValidationResponse(response);
-        setIsValidated(true);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        setIsError(true);
-        setErrorMessage(error.toString());
-        resetFrom();
-      });
+    try {
+      const res = await amplifyPost({
+        apiName: "sscheck",
+        path: "/",
+        options: dataRequest,
+      }).response;
+
+      setValidationResponse(res);
+      setIsValidated(true);
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      setIsError(true);
+      setErrorMessage(error.toString());
+      resetFrom();
+    }
   }
 
   return (
@@ -131,7 +136,6 @@ export default function SampleSheetChecker() {
                   value={logLevel}
                   onChange={logLevelChangeHandler}
                   as="select"
-                  label="debug option input"
                   disabled={isLoading}
                 >
                   {constant.DEBUG_OPTIONS.map((item, idx) => (
@@ -147,7 +151,6 @@ export default function SampleSheetChecker() {
                 <Form.Control
                   id="custom-file"
                   type="file"
-                  label={fileSelected ? fileSelected.name : "File input"}
                   onChange={fileChangeHandler}
                   disabled={isLoading}
                 />
@@ -233,7 +236,6 @@ function DisplayResult({ validationResponse }) {
           <div className="d-grid">
             <Button
               variant="outline-secondary"
-              block
               onClick={() => download(logFile)}
             >
               Download logs as a txt file

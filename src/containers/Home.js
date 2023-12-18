@@ -1,9 +1,10 @@
 import React from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 import { useAppContext } from "../libs/contextLib";
-import { Auth } from "aws-amplify";
+import { signInWithRedirect } from "aws-amplify/auth";
 import Nav from "react-bootstrap/Nav";
 import "./Home.css";
+import { Link } from "react-router-dom";
 
 export default function Home() {
   const { user } = useAppContext();
@@ -11,7 +12,7 @@ export default function Home() {
     return (
       <div className="lander">
         <h3>UMCCR Samplesheet Check</h3>
-        <Nav.Link onClick={() => Auth.federatedSignIn({ provider: "Google" })}>
+        <Nav.Link onClick={() => signInWithRedirect({ provider: "Google" })}>
           Please Login
         </Nav.Link>
       </div>
@@ -21,7 +22,7 @@ export default function Home() {
   function renderScripts() {
     return (
       <div>
-        <ListGroup.Item href="/sample-sheet-checker" action>
+        <ListGroup.Item as={Link} to="/sample-sheet-checker" action>
           <span className="fw-bold">Sample Sheet Checker</span>
         </ListGroup.Item>
       </div>

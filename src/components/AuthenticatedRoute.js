@@ -1,6 +1,6 @@
 import React from "react";
 import { useAppContext } from "../libs/contextLib";
-import { Auth } from "aws-amplify";
+import { signInWithRedirect } from "aws-amplify/auth";
 import Nav from "react-bootstrap/Nav";
 
 import "./AuthenticatedRoute.css";
@@ -15,7 +15,7 @@ export default function AuthenticatedRoute({ children, ...rest }) {
   return (
     <div className="lander">
       <h3>UMCCR Samplesheet Check</h3>
-      <Nav.Link onClick={() => Auth.federatedSignIn({ provider: "Google" })}>
+      <Nav.Link onClick={() => signInWithRedirect({ provider: "Google" })}>
         Please Login
       </Nav.Link>
     </div>
