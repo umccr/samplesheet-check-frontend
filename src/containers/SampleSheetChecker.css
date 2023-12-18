@@ -21,25 +21,6 @@
   margin: 16px;
 }
 
-
-
-.row-metadata-sync {
-  align-items: center;
-  justify-content: space-between;
-}
-
-.p-metadata-sync {
-  margin-bottom: 0;
-  margin-top: 0;
-}
-
-.div-metadata-sync-text {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-}
-
-
 .btn-circle {
   width: 30px;
   height: 30px;
