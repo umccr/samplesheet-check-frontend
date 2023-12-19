@@ -66,11 +66,10 @@ oauth_redirect_in=$(aws ssm get-parameter --name '/data_portal/client/oauth_redi
 oauth_redirect_out=$(aws ssm get-parameter --name '/data_portal/client/oauth_redirect_out_local' | jq -r .Parameter.Value)
 
 lambda_api_domain=$(aws ssm get-parameter --name '/sscheck/lambda-api-domain' | jq -r .Parameter.Value)
-bucket_name=$(aws ssm get-parameter --name '/sscheck/bucket_name' | jq -r .Parameter.Value)
 
 data_portal_api_domain=$(aws ssm get-parameter --name '/data_portal/backend/api_domain_name' | jq -r .Parameter.Value)
 
-export REACT_APP_BUCKET_NAME=$bucket_name
+export REACT_APP_BUCKET_NAME=org.umccr.dev.sscheck
 export REACT_APP_LAMBDA_API_DOMAIN=$lambda_api_domain
 export REACT_APP_REGION=ap-southeast-2
 
