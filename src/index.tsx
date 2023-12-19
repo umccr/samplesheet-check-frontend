@@ -21,49 +21,12 @@ Amplify.configure(
     },
     API: {
       REST: {
-        sscheck: {
-          endpoint: config.apiGateway.URL,
-          region: config.apiGateway.REGION,
-        },
         metadataSync: {
-          endpoint: config.apiGateway.URL,
+          endpoint: config.dataPortalAPI.API,
           region: config.apiGateway.REGION,
         },
       },
     },
-    // API: {
-    //   REST: {
-    //     YourAPIName: {
-    //       endpoint: config.apiGateway.URL,
-    //       region: config.apiGateway.REGION,
-    //     },
-    //   },
-    // endpoints: [
-    //   {
-    //     name: "samplesheet-check",
-    //     endpoint: config.apiGateway.URL,
-    //     region: config.apiGateway.REGION,
-    //     custom_header: async () => {
-    //       return {
-    //         Authorization: `Bearer ${(await Auth.currentSession())
-    //           .getIdToken()
-    //           .getJwtToken()}`,
-    //       };
-    //     },
-    //   },
-    //   {
-    //     name: "metadata-sync-api",
-    //     endpoint: config.dataPortalAPI.API,
-    //     region: config.dataPortalAPI.REGION,
-    //     custom_header: async () => {
-    //       return {
-    //         Authorization: `Bearer ${(await Auth.currentSession())
-    //           .getIdToken()
-    //           .getJwtToken()}`,
-    //       };
-    //     },
-    //   },
-    // ],
   },
   {
     API: {

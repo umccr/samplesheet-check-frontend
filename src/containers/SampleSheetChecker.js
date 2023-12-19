@@ -6,10 +6,9 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
-import { download } from "../utils";
+import { download, sscheckFetchApi } from "../utils";
 
 // AWS
-import { post as amplifyPost } from "aws-amplify/api";
 import "./SampleSheetChecker.css";
 import SyncMetadataRow from "../components/SyncMetadataRow";
 
@@ -86,21 +85,15 @@ export default function SampleSheetChecker() {
     formData.append("file", fileSelected);
     formData.append("logLevel", logLevel);
 
-    const dataRequest = {
-      headers: {
-        "content-type": "multipart/form-data",
-      },
-      body: formData,
-    };
-
     try {
-      const res = await amplifyPost({
-        apiName: "sscheck",
-        path: "/",
-        options: dataRequest,
-      }).response;
+      const rawRes = await sscheckFetchApi({
+        method: "post",
+        additionalHeader: {},
+        body: formData,
+      });
+      const jsonRes = await rawRes.json();
 
-      setValidationResponse(res);
+      setValidationResponse(jsonRes);
       setIsValidated(true);
       setIsLoading(false);
     } catch (error) {
