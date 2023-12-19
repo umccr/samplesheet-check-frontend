@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import LoaderButton from "../components/LoaderButton";
-import Alert from "react-bootstrap/Alert";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
-import { download, sscheckFetchApi } from "../utils";
 
+import { sscheckFetchApi } from "../utils";
+import DisplayResult from "../components/DisplaySamplesheetResult";
 // AWS
 import "./SampleSheetChecker.css";
 import SyncMetadataRow from "../components/SyncMetadataRow";
@@ -27,7 +26,7 @@ export default function SampleSheetChecker() {
 
   // Response Variable
   const [validationResponse, setValidationResponse] = useState({});
-  const [isValidated, setIsValidated] = useState(false);
+  const [isValidated, setIsValidated] = useState(true);
 
   const [logLevel, setLogLevel] = useState("ERROR");
 
@@ -167,10 +166,11 @@ export default function SampleSheetChecker() {
 
         {isValidated && (
           <Row>
-            <DisplayResult validationResponse={validationResponse} />
+            <Col xs={12}>
+              <DisplayResult validationResponse={validationResponse} />
+            </Col>
           </Row>
         )}
-        {/* {displayResult(validationResponse)} */}
         <ShowError
           handleError={handleError}
           isError={isError}
@@ -178,70 +178,5 @@ export default function SampleSheetChecker() {
         />
       </Container>
     </div>
-  );
-}
-
-// Helper function to display results
-function DisplayResult({ validationResponse }) {
-  // Parse data from response
-  const alertVariant =
-    validationResponse.check_status === "PASS" ? "success" : "danger";
-  const errorMessage = validationResponse.error_message;
-  const logFile = validationResponse.log_file;
-
-  function displayLog(logFile) {
-    const arrayInput = logFile.split("\n");
-    return (
-      <>
-        <b>Logs:</b>
-        {arrayInput.map((val, index) => (
-          <Row key={index}>{val}</Row>
-        ))}
-      </>
-    );
-  }
-  function displayErrorMessage(errorMessage) {
-    return (
-      <>
-        <b>Error: </b> {errorMessage} <br />
-      </>
-    );
-  }
-
-  return (
-    <Row>
-      <Col xs={12}>
-        <Alert variant={alertVariant}>
-          <Alert.Heading>
-            Check Result: <b>{validationResponse.check_status}</b>
-          </Alert.Heading>
-          {errorMessage || logFile ? (
-            <>
-              <hr />
-              {errorMessage ? displayErrorMessage(errorMessage) : <></>}
-              {logFile ? displayLog(logFile) : <></>}
-            </>
-          ) : (
-            <></>
-          )}
-        </Alert>
-        {logFile ? (
-          <div className="d-grid">
-            <Button
-              variant="outline-secondary"
-              onClick={() => download(logFile)}
-            >
-              Download logs as a txt file
-            </Button>
-          </div>
-        ) : (
-          <></>
-        )}
-        <i>
-          *If you want to see more logging, try changing logger option to INFO
-          or DEBUG
-        </i>
-      </Col>
-    </Row>
   );
 }

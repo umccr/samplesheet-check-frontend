@@ -1,14 +1,14 @@
 import { fetchAuthSession } from "aws-amplify/auth";
 import config from "./config.ts";
 
-export function download(text) {
+export function download({ filename, content }) {
   // parameter take a text to be downloaded
   var element = document.createElement("a");
   element.setAttribute(
     "href",
-    "data:text/plain;charset=utf-8," + encodeURIComponent(text),
+    "data:text/plain;charset=utf-8," + encodeURIComponent(content),
   );
-  element.setAttribute("download", "log.txt");
+  element.setAttribute("download", filename);
 
   element.style.display = "none";
   document.body.appendChild(element);
