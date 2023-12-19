@@ -26,7 +26,7 @@ export default function SampleSheetChecker() {
 
   // Response Variable
   const [validationResponse, setValidationResponse] = useState({});
-  const [isValidated, setIsValidated] = useState(true);
+  const [isValidated, setIsValidated] = useState(false);
 
   const [logLevel, setLogLevel] = useState("ERROR");
 
