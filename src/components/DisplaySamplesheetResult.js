@@ -15,17 +15,13 @@ export default function DisplayResult({ validationResponse }) {
   const ssv2 = validationResponse.v2_samplesheet_str;
 
   function DisplayFile({ strFile, filename }) {
-    const arrayInput = strFile.split("\n");
-
     return (
       <>
         <pre
           className="overflow-auto pe-4 bg-light"
-          style={{ height: "300px" }}
+          style={{ maxHeight: "350px" }}
         >
-          {arrayInput.map((val, index) => (
-            <Row key={index}>{val}</Row>
-          ))}
+          {strFile}
         </pre>
         <div className="d-grid mt-2">
           <Button
