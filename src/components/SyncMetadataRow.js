@@ -33,6 +33,21 @@ export default function SyncMetadataRow() {
       const _res = await amplifyPost({
         apiName: "metadataSync",
         path: "/metadata/sync",
+        options: {
+          body: {
+            sheets: [
+              "2017",
+              "2018",
+              "2019",
+              "2020",
+              "2021",
+              "2022",
+              "2023",
+              "2024",
+            ],
+            truncate: true,
+          },
+        },
       }).response;
       console.debug("sync response: ", _res);
 
@@ -65,37 +80,54 @@ export default function SyncMetadataRow() {
   }
 
   return (
-    <div className="row-metadata-sync">
-      <ShowModal
-        handleIsOpen={(value) => {
-          setModalProps((p) => ({ ...p, isOpen: value }));
-        }}
-        isOpen={modalProps.isOpen}
-        title={modalProps.title}
-        message={modalProps.message}
-      />
-      <ShowError
-        handleError={() => {
-          setErrorString("");
-        }}
-        isError={!!errorString}
-        errorMessage={errorString}
-      />
-      <div className="div-metadata-sync-text">
-        <p className="p-metadata-sync">Sync Portal Metadata</p>
-        <Button variant="circle" onClick={handleInfoMetadataSyncButton}>
-          <QuestionCircle />
+    <div>
+      <div className="row-metadata-sync">
+        <ShowModal
+          handleIsOpen={(value) => {
+            setModalProps((p) => ({ ...p, isOpen: value }));
+          }}
+          isOpen={modalProps.isOpen}
+          title={modalProps.title}
+          message={modalProps.message}
+        />
+        <ShowError
+          handleError={() => {
+            setErrorString("");
+          }}
+          isError={!!errorString}
+          errorMessage={errorString}
+        />
+        <div className="div-metadata-sync-text">
+          <div>
+            <p className="p-metadata-sync">Sync Portal Metadata</p>
+          </div>
+          <Button variant="circle" onClick={handleInfoMetadataSyncButton}>
+            <QuestionCircle />
+          </Button>
+        </div>
+        <Button
+          size="sm"
+          variant="outline-primary"
+          className="btn-sync"
+          disabled={isSyncAnimation}
+          onClick={handleSyncMetadataButton}
+        >
+          <ArrowRepeat
+            size={20}
+            className={isSyncAnimation ? "spinning" : ""}
+          />
         </Button>
       </div>
-      <Button
-        size="sm"
-        variant="outline-primary"
-        className="btn-sync"
-        disabled={isSyncAnimation}
-        onClick={handleSyncMetadataButton}
+      <small
+        style={{
+          marginTop: "1rem",
+          marginBottom: "0",
+          fontSize: "12px",
+          color: "gray",
+        }}
       >
-        <ArrowRepeat size={20} className={isSyncAnimation ? "spinning" : ""} />
-      </Button>
+        from the year 2017 to 2024
+      </small>
     </div>
   );
 }
