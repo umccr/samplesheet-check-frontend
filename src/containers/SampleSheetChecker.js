@@ -91,7 +91,7 @@ export default function SampleSheetChecker() {
         path: "/",
         options: { body: formData },
       }).response;
-      const jsonRes = await rawRes.json();
+      const jsonRes = await rawRes.body.json();
 
       setValidationResponse(jsonRes);
       setIsValidated(true);
