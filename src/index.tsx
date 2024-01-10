@@ -5,8 +5,9 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { Amplify } from "aws-amplify";
 import { fetchAuthSession } from "aws-amplify/auth";
-
 import config from "./config.ts";
+
+
 
 Amplify.configure(
   {
@@ -23,6 +24,10 @@ Amplify.configure(
       REST: {
         metadataSync: {
           endpoint: config.dataPortalAPI.API,
+          region: config.apiGateway.REGION,
+        },
+        sscheckAPI: {
+          endpoint: config.apiGateway.URL,
           region: config.apiGateway.REGION,
         },
       },
