@@ -13,7 +13,7 @@ export default function ShowError({handleError, isError, errorMessage}) {
         <Modal.Header closeButton>
           <Modal.Title>Error</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Sorry, An error has occured. Please try again!</Modal.Body>
+        <Modal.Body>Sorry, An error has occurred. Please try again!</Modal.Body>
         <Modal.Body>{errorMessage}</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>

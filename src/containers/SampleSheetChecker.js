@@ -4,8 +4,8 @@ import LoaderButton from "../components/LoaderButton";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import { post as amplifyPost } from "aws-amplify/api";
 
-import { sscheckFetchApi } from "../utils";
 import DisplayResult from "../components/DisplaySamplesheetResult";
 // AWS
 import "./SampleSheetChecker.css";
@@ -41,6 +41,7 @@ export default function SampleSheetChecker() {
   function resetResponse() {
     setValidationResponse({});
     setIsValidated(false);
+    setFileSelected(false);
   }
 
   function resetFrom() {
@@ -57,8 +58,8 @@ export default function SampleSheetChecker() {
   // Handle File Changes
   function fileChangeHandler(event) {
     if (event.target.files[0]) {
-      setFileSelected(event.target.files[0]);
       resetResponse();
+      setFileSelected(event.target.files[0]);
     } else {
       setFileSelected(null);
     }
@@ -85,11 +86,11 @@ export default function SampleSheetChecker() {
     formData.append("logLevel", logLevel);
 
     try {
-      const rawRes = await sscheckFetchApi({
-        method: "post",
-        additionalHeader: {},
-        body: formData,
-      });
+      const rawRes = await amplifyPost({
+        apiName: "sscheckAPI",
+        path: "/",
+        options: { body: formData },
+      }).response;
       const jsonRes = await rawRes.json();
 
       setValidationResponse(jsonRes);
