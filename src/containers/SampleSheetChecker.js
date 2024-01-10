@@ -41,6 +41,7 @@ export default function SampleSheetChecker() {
   function resetResponse() {
     setValidationResponse({});
     setIsValidated(false);
+    setFileSelected(false);
   }
 
   function resetFrom() {
@@ -57,8 +58,8 @@ export default function SampleSheetChecker() {
   // Handle File Changes
   function fileChangeHandler(event) {
     if (event.target.files[0]) {
-      setFileSelected(event.target.files[0]);
       resetResponse();
+      setFileSelected(event.target.files[0]);
     } else {
       setFileSelected(null);
     }
