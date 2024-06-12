@@ -19,25 +19,24 @@ else:
 
 props = {
     "app_stack_name": "sscheck-front-end-stack",
-    "pipeline_name": {
-        "dev": "sscheck-frontend",
-        "prod": "sscheck-frontend"
-    },
     "pipeline_artifact_bucket_name" :{
         "dev": "sscheck-front-end-artifact-dev",
+        "stg": "sscheck-front-end-artifact-stg",
         "prod": "sscheck-front-end-artifact-prod"
     },
     "client_bucket_name": {
         "dev": "org.umccr.dev.sscheck",
+        "stg": "org.umccr.stg.sscheck",
         "prod": "org.umccr.prod.sscheck"
     },
-    "repository_source": "umccr/samplesheet-check-frontend",
     "branch_source": {
         "dev": "dev",
+        "stg": "feat/55-stg-deployment",
         "prod": "main"
     },
     "alias_domain_name":{
         "dev": ["sscheck.dev.umccr.org"],
+        "stg": ["sscheck.stg.umccr.org"],
         "prod": ["sscheck.umccr.org", "sscheck.prod.umccr.org"]
     }
 }
