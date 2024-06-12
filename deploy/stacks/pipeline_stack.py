@@ -102,11 +102,11 @@ class PipelineStack(Stack):
                 "CDKShellScript",
                 input=code_pipeline_source,
                 commands=[
-                    "cdk synth",
+                    "yarn cdk synth",
                 ],
                 install_commands=[
+                    "make install"
                     "cd deploy",
-                    "npm install -g aws-cdk",
                     "pip install -r requirements.txt"
                 ],
                 primary_output_directory="deploy/cdk.out"

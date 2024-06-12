@@ -13,8 +13,8 @@ See CDK readme at deploy directory. [CDK readme](deploy/README.md)
 
 **React**
 1. Install React dependancy  
-        `npm i`
+        `make install`
 2. Fetch ENV variables from AWS Systems Manager Parameter Store. (This will store environment variable needed to the terminal)  
         `source get_env.sh`
 3. Start the project and will be running at *http://localhost:3000/*  
-        `npm start`
+        `yarn run start`
