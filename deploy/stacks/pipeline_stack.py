@@ -13,8 +13,8 @@ from aws_cdk import (
     aws_codepipeline_actions as codepipeline_actions,
     aws_iam as iam,
     aws_codebuild as codebuild,
-    aws_sns as sns,
-    aws_codestarnotifications as codestarnotifications
+    aws_codestarnotifications as codestarnotifications,
+    aws_chatbot as chatbot
 )
 from stacks.sscheck_front_end_stack import SampleSheetCheckFrontEndStack
 
@@ -305,7 +305,7 @@ class PipelineStack(Stack):
         # Add Chatbot Notification
         self_mutate_pipeline.pipeline.notify_on(
             "SlackNotificationSSCheckFrontEnd",
-            target=chatbot_alerts_arn,
+            target=chatbot_slack_alerts,
             events=[
                 codepipeline.PipelineNotificationEvents.PIPELINE_EXECUTION_FAILED,
                 codepipeline.PipelineNotificationEvents.PIPELINE_EXECUTION_SUCCEEDED
