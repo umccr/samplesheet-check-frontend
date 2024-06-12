@@ -52,7 +52,7 @@ class SampleSheetCheckFrontEndStack(Stack):
         cert_use1_arn = ssm.StringParameter.from_string_parameter_name(
             self,
             "SSLCertificateARN",
-            string_parameter_name="/sscheck/ssl_certificate_arn",
+            string_parameter_name="/sscheck/api/ssl_certificate_arn",
         ).string_value
 
         cert_use1 = acm.Certificate.from_certificate_arn(

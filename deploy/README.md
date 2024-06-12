@@ -47,7 +47,7 @@ $ pip install -r requirements.txt
 
 **Prerequisite**
 - A valid SSL Certificate in `us-east-1` region at ACM for all the domain name needed. See [here](app.py#L39) (`alias_domain_name` on the props variable) on what domain need to be included, determined based on which account is deployed.
-- SSM Parameter for the certificate ARN created above with the name of `/sscheck/ssl_certificate_arn`
+- SSM Parameter for the certificate ARN created above with the name of `/sscheck/api/ssl_certificate_arn`
 
 _Deploying the stack without prerequisite above may result in a stack rollback._
 
