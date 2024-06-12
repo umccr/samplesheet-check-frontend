@@ -10,9 +10,11 @@ from stacks.pipeline_stack import PipelineStack
 account_id = os.environ.get('CDK_DEFAULT_ACCOUNT')
 aws_region = os.environ.get('CDK_DEFAULT_REGION')
 
-# Determine account stage (Identify if it is running on prod or dev)
-if account_id == "472057503814":  # Account number used for production environment
+# Determine account stage (Identify if it is running on prod, stg, or dev)
+if account_id == "472057503814":  # Prod account
     app_stage = "prod"
+elif account_id == "455634345446":  # Staging account
+    app_stage = "stg"
 else:
     app_stage = "dev"
 
