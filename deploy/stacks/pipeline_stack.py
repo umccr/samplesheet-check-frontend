@@ -105,7 +105,7 @@ class PipelineStack(Stack):
                     "yarn cdk synth",
                 ],
                 install_commands=[
-                    "make install",
+                    "yarn install",
                     "cd deploy",
                     "pip install -r requirements.txt"
                 ],

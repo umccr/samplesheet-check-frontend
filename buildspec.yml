@@ -4,7 +4,7 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
-      - make install
+      - yarn install
   build:
     commands:
       - set -eu
