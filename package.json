@@ -1,22 +1,21 @@
 {
-  "name": "umccr-scripts",
+  "name": "samplesheet-check-frontend",
+  "packageManager": "yarn@4.3.0",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "aws-amplify": "^6.0.10",
+    "aws-amplify": "^6.3.6",
     "eslint-config-react-app": "^7.0.1",
-    "react": "^18.2.0",
-    "react-bootstrap": "^2.9.2",
-    "react-bootstrap-icons": "^1.10.3",
-    "react-dom": "^18.2.0",
-    "react-icons": "^4.12.0",
-    "react-router-dom": "^6.21.1"
+    "react": "^18.3.1",
+    "react-bootstrap": "^2.10.2",
+    "react-bootstrap-icons": "^1.11.4",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.2.1",
+    "react-router-dom": "^6.23.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "GENERATE_SOURCEMAP=false react-scripts start",
+    "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "deploy": "aws s3 rm s3://${REACT_APP_BUCKET_NAME}/ --recursive && aws s3 cp ./build s3://${REACT_APP_BUCKET_NAME}/ --recursive"
   },
   "eslintConfig": {
@@ -27,7 +26,9 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "react-scripts": "^5.0.1"
+    "aws-cdk": "^2.145.0",
+    "react-scripts": "^5.0.1",
+    "typescript": "^5.4.5"
   },
   "browserslist": {
     "production": [

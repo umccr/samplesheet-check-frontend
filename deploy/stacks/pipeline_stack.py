@@ -13,8 +13,8 @@ from aws_cdk import (
     aws_codepipeline_actions as codepipeline_actions,
     aws_iam as iam,
     aws_codebuild as codebuild,
-    aws_sns as sns,
-    aws_codestarnotifications as codestarnotifications
+    aws_codestarnotifications as codestarnotifications,
+    aws_chatbot as chatbot
 )
 from stacks.sscheck_front_end_stack import SampleSheetCheckFrontEndStack
 
@@ -76,12 +76,12 @@ class PipelineStack(Stack):
             artifact_bucket=pipeline_artifact_bucket,
             restart_execution_on_update=True,
             cross_account_keys=False,
-            pipeline_name=props["pipeline_name"][app_stage],
+            pipeline_name="sscheck-frontend",
         )
 
         # Create codestar connection fileset
         code_pipeline_source = pipelines.CodePipelineSource.connection(
-            repo_string=props["repository_source"],
+            repo_string="umccr/samplesheet-check-frontend",
             branch=props["branch_source"][app_stage],
             connection_arn=codestar_arn,
             trigger_on_push=True
@@ -102,11 +102,11 @@ class PipelineStack(Stack):
                 "CDKShellScript",
                 input=code_pipeline_source,
                 commands=[
-                    "cdk synth",
+                    "yarn cdk synth",
                 ],
                 install_commands=[
+                    "yarn install",
                     "cd deploy",
-                    "npm install -g aws-cdk",
                     "pip install -r requirements.txt"
                 ],
                 primary_output_directory="deploy/cdk.out"
@@ -289,24 +289,23 @@ class PipelineStack(Stack):
             ]
         )
 
-        # SSM parameter for AWS SNS ARN
-        data_portal_notification_sns_arn = ssm.StringParameter.from_string_parameter_attributes(
+        # SSM parameter for AWS Slack Alerts Chatbot ARN
+        chatbot_alerts_arn = ssm.StringParameter.from_string_parameter_attributes(
             self,
-            "DataPortalSNSArn",
-            parameter_name="/data_portal/backend/notification_sns_topic_arn"
+            "ChatbotAlertsARN",
+            parameter_name="/chatbot/slack/umccr/alerts-arn"
         ).string_value
 
-        # SNS chatbot
-        data_portal_sns_notification = sns.Topic.from_topic_arn(
+        chatbot_slack_alerts = chatbot.SlackChannelConfiguration.from_slack_channel_configuration_arn(
             self,
-            "DataPortalSNS",
-            topic_arn=data_portal_notification_sns_arn
+            'SlackAlertsChannelConfiguration',
+            chatbot_alerts_arn
         )
 
         # Add Chatbot Notification
         self_mutate_pipeline.pipeline.notify_on(
             "SlackNotificationSSCheckFrontEnd",
-            target=data_portal_sns_notification,
+            target=chatbot_slack_alerts,
             events=[
                 codepipeline.PipelineNotificationEvents.PIPELINE_EXECUTION_FAILED,
                 codepipeline.PipelineNotificationEvents.PIPELINE_EXECUTION_SUCCEEDED

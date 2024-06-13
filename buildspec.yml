@@ -4,10 +4,10 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
-      - npm i react-scripts
+      - yarn install
   build:
     commands:
       - set -eu
       - env | grep REACT
-      - npm run build
-      - npm run deploy
+      - yarn run build
+      - yarn run deploy

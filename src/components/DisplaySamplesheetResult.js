@@ -1,6 +1,5 @@
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
-import Row from "react-bootstrap/Row";
 import Accordion from "react-bootstrap/Accordion";
 
 import { download } from "../utils";

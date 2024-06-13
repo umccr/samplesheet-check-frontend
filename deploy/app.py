@@ -10,34 +10,35 @@ from stacks.pipeline_stack import PipelineStack
 account_id = os.environ.get('CDK_DEFAULT_ACCOUNT')
 aws_region = os.environ.get('CDK_DEFAULT_REGION')
 
-# Determine account stage (Identify if it is running on prod or dev)
-if account_id == "472057503814":  # Account number used for production environment
+# Determine account stage (Identify if it is running on prod, stg, or dev)
+if account_id == "472057503814":  # Prod account
     app_stage = "prod"
+elif account_id == "455634345446":  # Staging account
+    app_stage = "stg"
 else:
     app_stage = "dev"
 
 
 props = {
     "app_stack_name": "sscheck-front-end-stack",
-    "pipeline_name": {
-        "dev": "sscheck-frontend",
-        "prod": "sscheck-frontend"
-    },
     "pipeline_artifact_bucket_name" :{
         "dev": "sscheck-front-end-artifact-dev",
+        "stg": "sscheck-front-end-artifact-stg",
         "prod": "sscheck-front-end-artifact-prod"
     },
     "client_bucket_name": {
         "dev": "org.umccr.dev.sscheck",
+        "stg": "org.umccr.stg.sscheck",
         "prod": "org.umccr.prod.sscheck"
     },
-    "repository_source": "umccr/samplesheet-check-frontend",
     "branch_source": {
         "dev": "dev",
+        "stg": "stg",
         "prod": "main"
     },
     "alias_domain_name":{
         "dev": ["sscheck.dev.umccr.org"],
+        "stg": ["sscheck.stg.umccr.org"],
         "prod": ["sscheck.umccr.org", "sscheck.prod.umccr.org"]
     }
 }
