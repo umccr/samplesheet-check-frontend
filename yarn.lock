@@ -5190,9 +5190,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-cdk@npm:^2.145.0":
-  version: 2.145.0
-  resolution: "aws-cdk@npm:2.145.0"
+"aws-cdk@npm:^2.148.1":
+  version: 2.154.1
+  resolution: "aws-cdk@npm:2.154.1"
   dependencies:
     fsevents: "npm:2.3.2"
   dependenciesMeta:
@@ -5200,7 +5200,7 @@ __metadata:
       optional: true
   bin:
     cdk: bin/cdk
-  checksum: 10c0/326adfea1d6860a50ca51ebb04450b58451b39e494b4b5f54634ba845a664c84bdda7c254f37d3e01b7cefd7198505d10e23eed1fb6d1425b26c588691c3ac2a
+  checksum: 10c0/9e577303c3d8f3321c3339c977dc74121d22d14f3eed29f02af05d75d90bd24571872aea62412383dd5fee3b1f09215dcc427b9acb13a8f68ee49b7d21818844
   languageName: node
   linkType: hard
 
@@ -12872,7 +12872,7 @@ __metadata:
   dependencies:
     "@babel/plugin-proposal-private-property-in-object": "npm:^7.21.11"
     aws-amplify: "npm:^6.3.6"
-    aws-cdk: "npm:^2.145.0"
+    aws-cdk: "npm:^2.148.1"
     eslint-config-react-app: "npm:^7.0.1"
     react: "npm:^18.3.1"
     react-bootstrap: "npm:^2.10.2"
