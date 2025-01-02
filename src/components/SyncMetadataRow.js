@@ -6,6 +6,15 @@ import ShowModal from "./Modal";
 import ShowError from "./Error";
 import "./SyncMetadataRow.css";
 
+const startYear = 2017;
+const currentYear = new Date().getFullYear();
+const years = [];
+
+// Create an array of years from 2017 to current year
+for (let year = startYear; year <= currentYear; year++) {
+  years.push(year);
+}
+
 export default function SyncMetadataRow() {
   const [isSyncAnimation, setIsSyncAnimation] = useState(false);
 
@@ -35,16 +44,7 @@ export default function SyncMetadataRow() {
         path: "/metadata/sync",
         options: {
           body: {
-            sheets: [
-              "2017",
-              "2018",
-              "2019",
-              "2020",
-              "2021",
-              "2022",
-              "2023",
-              "2024",
-            ],
+            sheets: years,
             truncate: true,
           },
         },
@@ -126,7 +126,7 @@ export default function SyncMetadataRow() {
           color: "gray",
         }}
       >
-        from the year 2017 to 2024
+        {`from the year 2017 to ${currentYear}`}
       </small>
     </div>
   );
