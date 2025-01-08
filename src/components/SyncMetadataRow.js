@@ -12,7 +12,7 @@ const years = [];
 
 // Create an array of years from 2017 to current year
 for (let year = startYear; year <= currentYear; year++) {
-  years.push(year);
+  years.push(year.toString());
 }
 
 export default function SyncMetadataRow() {
